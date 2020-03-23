@@ -2,6 +2,7 @@
 # treesnip
 
 <!-- badges: start -->
+[![R build status](https://github.com/curso-r/treesnip/workflows/R-CMD-check/badge.svg)](https://github.com/curso-r/treesnip)
 <!-- badges: end -->
 
 

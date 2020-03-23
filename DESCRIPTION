@@ -7,6 +7,7 @@ Authors@R:
            role = c("aut", "cre"),
            email = "dfalbel@curso-r.com"
            )
+URL: https://github.com/curso-r/treesnip
 Description: Provides a new engine for decision trees following the 'parsnip'
   conventions.
 License: MIT + file LICENSE
