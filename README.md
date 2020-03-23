@@ -4,7 +4,6 @@
 <!-- badges: start -->
 <!-- badges: end -->
 
-The goal of treesnip is to ...
 
 ## Installation
 
