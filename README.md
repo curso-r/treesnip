@@ -54,7 +54,7 @@ mod <- decision_tree(min_n = 0, cost_complexity = 0) %>%
 mod
 #> parsnip model object
 #> 
-#> Fit time:  5ms 
+#> Fit time:  7ms 
 #> node), split, n, deviance, yval
 #>       * denotes terminal node
 #> 
