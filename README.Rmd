@@ -1,0 +1,58 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# treesnip
+
+<!-- badges: start -->
+[![R build status](https://github.com/curso-r/treesnip/workflows/R-CMD-check/badge.svg)](https://github.com/curso-r/treesnip)
+<!-- badges: end -->
+
+
+## Installation
+
+You can install the released version of treesnip from [CRAN](https://CRAN.R-project.org) with:
+
+``` r
+remotes::install_github("curso-r/treesnip")
+```
+
+## Example
+
+This package provides the `tree` engine for `decision_tree` in parsnip.
+
+```{r}
+library(treesnip)
+library(tidymodels)
+
+set.seed(1)
+df <- tibble(
+  x = runif(10), 
+  y = 2* x + rnorm(10, sd = 0.1)
+)
+
+mod <- decision_tree(min_n = 0, cost_complexity = 0) %>%
+  set_engine("tree") %>%
+  set_mode("regression") %>% 
+  fit(y ~ x, df)
+
+mod
+
+df %>% 
+  mutate(pred = predict(mod, df)$.pred) %>% 
+  ggplot(aes(x = x)) +
+  geom_point(aes( y = y)) +
+  geom_step(aes(y = pred))
+```
+
