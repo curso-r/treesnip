@@ -20,6 +20,9 @@ print.treesnip <- tree:::print.tree
 
 .onLoad <- function(libname, pkgname){
 
+  object <- NULL
+  new_data <- NULL
+
   parsnip::set_model_engine("decision_tree", mode = "regression", eng = "tree")
 
   parsnip::set_dependency("decision_tree", eng = "tree", pkg = "tree")

@@ -1,3 +1,4 @@
 ^treesnip\.Rproj$
 ^\.Rproj\.user$
 ^LICENSE\.md$
+^\.github/workflows/R-CMD-check\.yaml$
