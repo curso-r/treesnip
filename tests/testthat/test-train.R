@@ -10,7 +10,7 @@ test_that("tree engine works", {
   res <- fit(mod, y ~x, df)
   pred <- predict(res, df)$.pred
 
-  expect_equal(pred, df$y)
+  expect_equal(pred, df$y, tolerance = 0.0001)
 })
 
 test_that("can tune tree parameters", {
