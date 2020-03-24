@@ -7,7 +7,7 @@
 train_tree(...)
 }
 \arguments{
-\item{...}{arguments passed directly to \verb{[tree::tree()]}.}
+\item{...}{arguments passed directly to \code{[tree::tree()]}.}
 }
 \description{
 Simple wraper aroound \code{tree::tree} that adds a simple
