@@ -79,6 +79,7 @@ print.treesnip <- tree:::print.tree
 
 
   parsnip::set_model_engine("boost_tree", mode = "regression", eng = "catboost")
+  parsnip::set_model_engine("boost_tree", mode = "classification", eng = "catboost")
 
   parsnip::set_dependency("boost_tree", eng = "catboost", pkg = "catboost")
 
@@ -89,7 +90,19 @@ print.treesnip <- tree:::print.tree
     value = list(
       interface = "data.frame",
       protect = c("x", "y", "weights"),
-      func = c(pkg = "treesnip", fun = "train_catboost"),
+      func = c(pkg = "treesnip", fun = "train_catboost_reg"),
+      defaults = list()
+    )
+  )
+
+  parsnip::set_fit(
+    model = "boost_tree",
+    eng = "catboost",
+    mode = "classification",
+    value = list(
+      interface = "data.frame",
+      protect = c("x", "y", "weights"),
+      func = c(pkg = "treesnip", fun = "train_catboost_class"),
       defaults = list()
     )
   )

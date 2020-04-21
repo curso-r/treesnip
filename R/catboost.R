@@ -1,10 +1,15 @@
-
-
-# devtools::install_url("https://github.com/catboost/catboost/releases/download/v0.22/catboost-R-Darwin-0.22.tgz",
-#                       INSTALL_opts = c("--no-multiarch"))
+#' @export
+train_catboost_class <- function(...) {
+  train_catboost(..., mode = "classification")
+}
 
 #' @export
-train_catboost <- function(...) {
+train_catboost_reg <- function(...) {
+  train_catboost(..., mode = "regression")
+}
+
+#' @export
+train_catboost <- function(..., mode) {
   args <- list(...)
 
   args$rsm <- args$rsm/ncol(args$x)
