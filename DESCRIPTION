@@ -16,7 +16,8 @@ LazyData: true
 Roxygen: list(markdown = TRUE)
 Suggests: 
     testthat (>= 2.1.0),
-    tidymodels
+    tidymodels,
+    catboost
 RoxygenNote: 7.0.2
 Imports: 
     parsnip,
