@@ -1,2 +1,4 @@
 .Rproj.user
 .Rhistory
+catboost_info
+tests/testthat/catboost_info
