@@ -108,7 +108,9 @@ test_that('catboost classification prediction', {
 
   xy_pred <- predict(xy_fit$fit, new_data = catboost::catboost.load_pool(iris[1:8, num_pred]), type = "class")
   xy_pred <- factor(levels(iris$Species)[xy_pred + 1], levels = levels(iris$Species))
+
   expect_equal(xy_pred, predict(xy_fit, new_data = iris[1:8, num_pred], type = "class")$.pred_class)
+  expect_equal(xy_pred, predict(xy_fit, new_data = iris[1:8, rev(num_pred)], type = "class")$.pred_class)
 
   form_fit <- fit(
     iris_catboost,
@@ -120,24 +122,15 @@ test_that('catboost classification prediction', {
   form_pred <- predict(form_fit$fit, new_data = catboost::catboost.load_pool(iris[1:8, num_pred]), type = "class")
   form_pred <- factor(levels(iris$Species)[form_pred + 1], levels = levels(iris$Species))
   expect_equal(form_pred, predict(form_fit, new_data = iris[1:8, num_pred], type = "class")$.pred_class)
+  expect_equal(form_pred, predict(form_fit, new_data = iris[1:8, rev(num_pred)], type = "class")$.pred_class)
 })
-
 
 # ------------------------------------------------------------------------------
 
 num_pred <- names(mtcars)[3:6]
 
-car_basic <-
-  boost_tree(mode = "regression") %>%
-  set_engine("catboost")
-
-bad_catboost_reg <-
-  boost_tree(mode = "regression") %>%
-  set_engine("catboost", min.node.size = -10)
-
-bad_rf_reg <-
-  boost_tree(mode = "regression") %>%
-  set_engine("catboost", sampsize = -10)
+car_basic <- boost_tree(mode = "regression") %>%
+  set_engine("catboost", leaf_estimation_method = -1)
 
 test_that('catboost execution, regression', {
 
@@ -149,8 +142,7 @@ test_that('catboost execution, regression', {
       mpg ~ .,
       data = mtcars,
       control = ctrl
-    ),
-    regexp = NA
+    )
   )
 
   expect_error(
@@ -159,12 +151,14 @@ test_that('catboost execution, regression', {
       x = mtcars[, num_pred],
       y = mtcars$mpg,
       control = ctrl
-    ),
-    regexp = NA
+    )
   )
 })
 
 
+car_basic <-
+  boost_tree(mode = "regression") %>%
+  set_engine("catboost")
 
 test_that('catboost regression prediction', {
 
@@ -232,4 +226,47 @@ test_that('submodel prediction', {
   )
 })
 
+model_with_tune <-
+  boost_tree(mode = "regression", trees = tune()) %>%
+  set_engine("catboost")
+
+rs <- rsample::vfold_cv(data = mtcars[-(1:4), ], 2)
+tg <- tune::tune_grid(
+  mpg ~ .,
+  model_with_tune,
+  resamples = rs
+)
+
+final_model <- finalize_model(model_with_tune, select_best(tg, "rsq"))
+
+test_that('tune package for catboost works', {
+  expect_equal(class(rlang::quo_get_expr(final_model$args$trees)), "integer")
+})
+
+
+final_model <-
+  boost_tree(mode = "regression", trees = 5) %>%
+  set_engine("xgboost")
+
+test_that('recipe and workflows packages for catboost works', {
+
+  final_model <-
+    parsnip::boost_tree(mode = "regression", trees = 5) %>%
+    parsnip::set_engine("xgboost")
+
+  rec <- recipes::recipe(mpg ~ ., mtcars) %>%
+    recipes::step_center(recipes::all_outcomes())
+
+  wf <- workflows::workflow() %>%
+    workflows::add_model(final_model) %>%
+    workflows::add_recipe(rec)
+
+  model <- parsnip::fit(
+    wf,
+    data = mtcars
+  )
+
+  # not working with transformations on outcomes
+  expect_success(workflows:::predict.workflow(model, new_data = mtcars[1:4, ], outcomes = FALSE))
+})
 
