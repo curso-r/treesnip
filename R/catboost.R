@@ -16,8 +16,34 @@ add_boost_tree_catboost <- function() {
     value = list(
       interface = "data.frame",
       protect = c("x", "y", "weights"),
-      func = c(pkg = "treesnip", fun = "train_catboost_reg"),
+      func = c(pkg = "treesnip", fun = "train_catboost"),
       defaults = list()
+    )
+  )
+
+  parsnip::set_pred(
+    model = "boost_tree",
+    eng = "catboost",
+    mode = "regression",
+    type = "numeric",
+    value = list(
+      pre = NULL,
+      post = NULL,
+      func = c(fun = "predict"),
+      args = list(object = quote(object$fit), new_data = quote(new_data))
+    )
+  )
+
+  parsnip::set_pred(
+    model = "boost_tree",
+    eng = "catboost",
+    mode = "regression",
+    type = "raw",
+    value = list(
+      pre = NULL,
+      post = NULL,
+      func = c(fun = "predict"),
+      args = list(object = quote(object$fit), new_data = quote(new_data))
     )
   )
 
@@ -28,8 +54,62 @@ add_boost_tree_catboost <- function() {
     value = list(
       interface = "data.frame",
       protect = c("x", "y", "weights"),
-      func = c(pkg = "treesnip", fun = "train_catboost_class"),
+      func = c(pkg = "treesnip", fun = "train_catboost"),
       defaults = list()
+    )
+  )
+
+  parsnip::set_pred(
+    model = "boost_tree",
+    eng = "catboost",
+    mode = "classification",
+    type = "class",
+    value = list(
+      pre = NULL,
+      post = function(x, object) {
+        if (is.vector(x)) {
+          x <- ifelse(x >= 0.5, object$lvl[2], object$lvl[1])
+        } else {
+          x <- object$lvl[apply(x, 1, which.max)]
+        }
+        x
+      },
+      func = c(pkg = NULL, fun = "predict"),
+      args = list(object = quote(object$fit), new_data = quote(new_data))
+    )
+  )
+
+  parsnip::set_pred(
+    model = "boost_tree",
+    eng = "catboost",
+    mode = "classification",
+    type = "prob",
+    value = list(
+      pre = NULL,
+      post = function(x, object) {
+        if (is.vector(x)) {
+          x <- tibble::tibble(v1 = 1 - x, v2 = x)
+        } else {
+          x <- tibble::as_tibble(x)
+        }
+        colnames(x) <- object$lvl
+        x
+      },
+      func = c(pkg = NULL, fun = "predict"),
+      args = list(object = quote(object$fit), new_data = quote(new_data))
+    )
+  )
+
+  parsnip::set_pred(
+    model = "boost_tree",
+    eng = "catboost",
+    mode = "classification",
+    type = "raw",
+    value = list(
+      pre = NULL,
+      post = NULL,
+      func = c(fun = "predict"),
+      args = list(object = quote(object$fit), new_data = quote(new_data))
     )
   )
 
@@ -37,7 +117,7 @@ add_boost_tree_catboost <- function() {
     model = "boost_tree",
     eng = "catboost",
     parsnip = "tree_depth",
-    original = "max_depth",
+    original = "depth",
     func = list(pkg = "dials", fun = "tree_depth"),
     has_submodel = FALSE
   )
@@ -53,7 +133,7 @@ add_boost_tree_catboost <- function() {
     model = "boost_tree",
     eng = "catboost",
     parsnip = "learn_rate",
-    original = "eta",
+    original = "learning_rate",
     func = list(pkg = "dials", fun = "learn_rate"),
     has_submodel = FALSE
   )
@@ -69,18 +149,18 @@ add_boost_tree_catboost <- function() {
     model = "boost_tree",
     eng = "catboost",
     parsnip = "min_n",
-    original = "min_child_weight",
+    original = "min_data_in_leaf",
     func = list(pkg = "dials", fun = "min_n"),
     has_submodel = FALSE
   )
-  parsnip::set_model_arg(
-    model = "boost_tree",
-    eng = "catboost",
-    parsnip = "loss_reduction",
-    original = "gamma",
-    func = list(pkg = "dials", fun = "loss_reduction"),
-    has_submodel = FALSE
-  )
+  # parsnip::set_model_arg(
+  #   model = "boost_tree",
+  #   eng = "catboost",
+  #   parsnip = "loss_reduction",
+  #   original = "gamma", # There is no such parameter in catboost
+  #   func = list(pkg = "dials", fun = "loss_reduction"),
+  #   has_submodel = FALSE
+  # )
   parsnip::set_model_arg(
     model = "boost_tree",
     eng = "catboost",
@@ -89,40 +169,174 @@ add_boost_tree_catboost <- function() {
     func = list(pkg = "dials", fun = "sample_size"),
     has_submodel = FALSE
   )
+}
 
+#' Boosted trees via catboost
+#'
+#' `catboost_train` is a wrapper for `catboost` tree-based models
+#'  where all of the model arguments are in the main function.
+#'
+#' @param x A data frame or matrix of predictors
+#' @param y A vector (factor or numeric) or matrix (numeric) of outcome data.
+#' @param depth An integer for the maximum depth of the tree.
+#' @param iterations An integer for the number of boosting iterations.
+#' @param learning_rate A numeric value between zero and one to control the learning rate.
+#' @param rsm Subsampling proportion of columns.
+#' @param min_data_in_leaf A numeric value for the minimum sum of instances needed
+#'  in a child to continue to split.
+#' @param subsample Subsampling proportion of rows.
+#' @param ... Other options to pass to `catboost.train`.
+#' @return A fitted `catboost.Model` object.
+#' @keywords internal
+#' @export
+train_catboost <- function(x, y, depth = 6, iterations = 1000, learning_rate = NULL,
+                           rsm = 1, min_data_in_leaf = 1, subsample = 1, ...) {
 
+  # rsm ------------------------------
+  if(!is.null(rsm)) {
+    rsm <- rsm/ncol(x)
+  }
+  if(rsm > 1) {
+    rsm <- 1
+  }
+
+  # subsample -----------------------
+  if (subsample > 1) {
+    subsample <- 1
+  }
+
+  # loss -------------------------
+  if (is.numeric(y)) {
+    loss_function <- "RMSE"
+  } else {
+    lvl <- levels(y)
+    y <- as.numeric(y) - 1
+    if (length(lvl) == 2) {
+      loss_function <- "Logloss"
+    } else {
+      loss_function <- "MultiClass"
+    }
+  }
+
+  arg_list <- list(
+    loss_function = loss_function,
+    iterations = iterations,
+    learning_rate = learning_rate,
+    depth = depth,
+    rsm = rsm,
+    min_data_in_leaf = min_data_in_leaf,
+    subsample = subsample
+  )
+
+  # train ------------------------
+  d <- catboost::catboost.load_pool(data = x, label = y)
+
+  # override or add some other args
+  others <- list(...)
+  others <- others[!(names(others) %in% c("learn_pool", "test_pool", names(arg_list)))]
+
+  if(is.null(others$logging_level)) others$logging_level = "Silent"
+  if(is.null(others$bootstrap_type)) others$bootstrap_type = "Bernoulli" # subsample as is
+  if(is.null(others$sampling_frequency)) others$sampling_frequency = "PerTree" # subsample as is
+
+  arg_list <- purrr::compact(c(arg_list, others))
+  main_args <- list(
+    learn_pool = quote(d),
+    params = arg_list
+  )
+
+  call <- parsnip:::make_call(fun = "catboost.train", ns = "catboost", main_args)
+  rlang::eval_tidy(call, env = rlang::current_env())
+}
+
+#' Model predictions across many sub-models
+#'
+#' For some models, predictions can be made on sub-models in the model object.
+#'
+#' @param object A model_fit object.
+#' @param ... Optional arguments to pass to predict.model_fit(type = "raw") such as type.
+#' @param new_data A rectangular data object, such as a data frame.
+#' @param type A single character value or NULL. Possible values are "numeric", "class", "prob", "conf_int", "pred_int", "quantile", or "raw". When NULL, predict() will choose an appropriate value based on the model's mode.
+#' @param trees An integer vector for the number of trees in the ensemble.
+#'
+#' @export
+#' @importFrom purrr map_df
+multi_predict._catboost.Model <- function(object, new_data, type = NULL, trees = NULL, ...) {
+    if (any(names(rlang::enquos(...)) == "newdata")) {
+      rlang::abort("Did you mean to use `new_data` instead of `newdata`?")
+    }
+
+    if (is.null(trees)) {
+      trees <- object$fit$tree_count
+    }
+    trees <- sort(trees)
+
+    if (is.null(type)) {
+      if (object$spec$mode == "classification")
+        type <- "Class"
+      else
+        type <- "RawFormulaVal"
+    } else {
+      type <- switch (
+        type,
+        "raw" = "RawFormulaVal",
+        "numeric" = "RawFormulaVal",
+        "class" = "Class",
+        "prob" = "Probability"
+      )
+    }
+
+    res <- map_df(trees, catboost_by_tree, object = object, new_data = new_data, type = type, ...)
+    res <- dplyr::arrange(res, .row, trees)
+    res <- split(res[, -1], res$.row)
+    names(res) <- NULL
+
+    tibble::tibble(.pred = res)
+
+  }
+
+catboost_by_tree <- function(tree, object, new_data, type, ...) {
+
+  pred <- predict.catboost.Model(object$fit, new_data, ntree_end = tree, type = type, ...)
+
+  # switch based on prediction type
+  if (object$spec$mode == "regression") {
+    pred <- tibble::tibble(.pred = pred)
+    nms <- names(pred)
+  } else {
+    if (type == "class") {
+      pred <- object$spec$method$pred$class$post(pred, object)
+      pred <- tibble::tibble(.pred_class = factor(pred, levels = object$lvl))
+    } else {
+      pred <- object$spec$method$pred$prob$post(pred, object)
+      pred <- tibble::as_tibble(pred)
+      names(pred) <- paste0(".pred_", names(pred))
+    }
+    nms <- names(pred)
+  }
+  pred[["trees"]] <- tree
+  pred[[".row"]] <- 1:nrow(new_data)
+  pred[, c(".row", "trees", nms)]
 }
 
 #' @export
-train_catboost_class <- function(...) {
-  train_catboost(..., mode = "classification")
+predict.catboost.Model <- function(object, new_data, type = "RawFormulaVal", ...) {
+
+  if (!inherits(new_data, "catboost.Pool")) {
+    new_data <- catboost::catboost.load_pool(new_data)
+  }
+
+  type <- switch (
+    type,
+    "raw" = "RawFormulaVal",
+    "numeric" = "RawFormulaVal",
+    "class" = "Class",
+    "prob" = "Probability",
+    "RawFormulaVal"
+  )
+
+  catboost::catboost.predict(object, new_data, prediction_type = type, ...)
 }
-
-#' @export
-train_catboost_reg <- function(...) {
-  train_catboost(..., mode = "regression")
-}
-
-#' @export
-train_catboost <- function(..., mode) {
-  args <- list(...)
-
-  args$rsm <- args$rsm/ncol(args$x)
-
-  d <- catboost::catboost.load_pool(data = args$x, label = args$y)
-
-  args$x <- NULL
-  args$y <- NULL
-
-  mod <- catboost::catboost.train(learn_pool = d, params = args)
-  class(mod) <- c("catboost")
-  mod
-}
-
-
-
-
-
 
 
 
