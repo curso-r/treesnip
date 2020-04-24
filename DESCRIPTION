@@ -10,7 +10,7 @@ Authors@R:
 URL: https://github.com/curso-r/treesnip
 Description: Provides a new engine for decision trees following the 'parsnip'
   conventions.
-License: MIT + file LICENSE
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)

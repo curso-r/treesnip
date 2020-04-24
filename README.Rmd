@@ -11,6 +11,10 @@ knitr::opts_chunk$set(
   fig.path = "man/figures/README-",
   out.width = "100%"
 )
+library(magrittr)
+library(magrittr)
+library(knitr)
+library(kableExtra)
 ```
 
 # treesnip
@@ -19,6 +23,17 @@ knitr::opts_chunk$set(
 [![R build status](https://github.com/curso-r/treesnip/workflows/R-CMD-check/badge.svg)](https://github.com/curso-r/treesnip)
 <!-- badges: end -->
 
+This package provides the following bindings for parsnip package:
+
+- the `tree` engine for `decision_tree`;
+- the `catboost` engine for `boost_tree`;
+- the `lightGBM` engine for `boost_tree`.
+
+**docs**
+
+- [tree package docs](https://cran.r-project.org/web/packages/tree/tree.pdf)
+- [LightGBM docs](https://lightgbm.readthedocs.io/)
+- [Catboost docs](https://catboost.ai/docs/)
 
 ## Installation
 
@@ -28,9 +43,56 @@ You can install the released version of treesnip from [CRAN](https://CRAN.R-proj
 remotes::install_github("curso-r/treesnip")
 ```
 
-## Example
+## Roadmap
 
-This package provides the `tree` engine for `decision_tree` in parsnip.
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+ok <- function(x = "") {
+  if(x == "x") ":heavy_check_mark:"
+  else if(x == "n") ":white_circle:"
+  else ":red_circle:"
+}
+tibble::tribble(
+  ~fun,              ~tree,    ~catboost,    ~lightGBM,
+  "set_fit",       ok("x"),      ok("x"),      ok(),
+  "set_model_arg", ok("x"),      ok(),         ok(),
+  "set_pred",      ok("x"),      ok("x"),      ok(),
+  "train",         ok("x"),      ok("x"),      ok(),
+  "predict",       ok("x"),      ok("x"),      ok(),
+  "multi_predict", ok("n"),      ok("x"),      ok(),
+  "tests",         ok("x"),      ok(),         ok()
+) %>% kable() 
+```
+
+
+## Hyperparameters map
+
+**decision_tree()**
+
+```{r, echo=FALSE}
+tibble::tribble(
+  ~ parsnip, ~tree, 
+  "min_n", "minsize",
+  "cost_complexity", "mindev"
+) %>% knitr::kable()
+```
+
+**boost_tree()**
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+tibble::tribble(
+  ~ parsnip, ~catboost, ~lightGBM,
+  'mtry', 'rsm', 'feature_fraction',
+  'trees', 'iterations', 'num_iterations',
+  'min_n', 'min_data_in_leaf', 'min_data_in_leaf',
+  'tree_depth', 'depth', 'max_depth',
+  'learn_rate', 'learning_rate', 'learning_rate',
+  'loss_reduction', cell_spec('Not found', color = 'red', bold = TRUE), 'min_gain_to_split',
+  'sample_size', 'subsample', 'bagging_fraction'
+) %>% kable(escape = FALSE) 
+```
+
+
+## Example
 
 ```{r}
 library(treesnip)
@@ -55,4 +117,7 @@ df %>%
   geom_point(aes( y = y)) +
   geom_step(aes(y = pred))
 ```
+
+
+
 
