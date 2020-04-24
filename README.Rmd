@@ -37,7 +37,7 @@ This package provides the following bindings for parsnip package:
 
 ## Installation
 
-You can install the released version of treesnip from [CRAN](https://CRAN.R-project.org) with:
+Not on CRAN yet.
 
 ``` r
 remotes::install_github("curso-r/treesnip")
