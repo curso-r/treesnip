@@ -15,7 +15,7 @@ add_boost_tree_catboost <- function() {
     mode = "regression",
     value = list(
       interface = "data.frame",
-      protect = c("x", "y", "weights"),
+      protect = c("x", "y"),
       func = c(pkg = "treesnip", fun = "train_catboost"),
       defaults = list()
     )
@@ -53,7 +53,7 @@ add_boost_tree_catboost <- function() {
     mode = "classification",
     value = list(
       interface = "data.frame",
-      protect = c("x", "y", "weights"),
+      protect = c("x", "y"),
       func = c(pkg = "treesnip", fun = "train_catboost"),
       defaults = list()
     )
