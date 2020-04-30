@@ -1,7 +1,7 @@
 library(testthat)
 library(parsnip)
 
-context("boosted tree execution with catboost")
+context("boosted tree execution with lightgbm")
 # source("helper-objects.R") from parsnip -------------------------------------
 library(modeldata)
 
@@ -19,51 +19,49 @@ run_glmnet <- utils::compareVersion('3.6.0', as.character(getRversion())) > 0
 
 
 
-test_that("catboost fit works", {
-  model <- parsnip::boost_tree(mtry = 1, trees = 1)
+test_that("lightgbm fit works", {
+  model <- parsnip::boost_tree(mtry = 2, trees = 1, tree_depth = 4, min_n = 2)
   model <- parsnip::set_mode(model, "regression")
-  model <- parsnip::set_engine(model, "catboost")
+  model <- parsnip::set_engine(model, "lightgbm")
 
   # regression
-  catboost_fit <- parsnip::fit(model, mpg ~ . , data = mtcars)
-  expect_equal(class(catboost_fit), c("_catboost.Model", "model_fit"))
-  expect_equal(class(catboost_fit$fit$feature_importances), c("matrix"))
-  expect_equal(sum(catboost_fit$fit$feature_importances > 0), 2)
+  lightgbm_fit <- parsnip::fit(model, Sepal.Length ~ . , data = iris)
+  expect_equal(class(lightgbm_fit), c("_lgb.Booster", "model_fit"))
 
   # classification
   mtcars_class <- mtcars
   mtcars_class$vs <- factor(mtcars_class$vs)
-  catboost_fit <- parsnip::fit(model, vs ~ . , data = mtcars_class)
-  expect_equal(class(catboost_fit), c("_catboost.Model", "model_fit"))
-  expect_equal(class(catboost_fit$fit$feature_importances), c("matrix"))
-  expect_equal(sum(catboost_fit$fit$feature_importances > 0), 2)
+  lightgbm_fit <- parsnip::fit(model, vs ~ . , data = mtcars_class)
+  expect_equal(class(lightgbm_fit), c("_lightgbm.Model", "model_fit"))
+  expect_equal(class(lightgbm_fit$fit$feature_importances), c("matrix"))
+  expect_equal(sum(lightgbm_fit$fit$feature_importances > 0), 2)
 
   # multi-classification
   mtcars_class <- mtcars
   mtcars_class$cyl <- factor(mtcars_class$cyl)
-  catboost_fit <- parsnip::fit(model, cyl ~ . , data = mtcars_class)
-  expect_equal(class(catboost_fit), c("_catboost.Model", "model_fit"))
-  expect_equal(class(catboost_fit$fit$feature_importances), c("matrix"))
-  expect_equal(sum(catboost_fit$fit$feature_importances > 0), 2)
+  lightgbm_fit <- parsnip::fit(model, cyl ~ . , data = mtcars_class)
+  expect_equal(class(lightgbm_fit), c("_lightgbm.Model", "model_fit"))
+  expect_equal(class(lightgbm_fit$fit$feature_importances), c("matrix"))
+  expect_equal(sum(lightgbm_fit$fit$feature_importances > 0), 2)
 })
 
 # ------------------------------------------------------------------------------
 
 num_pred <- names(iris)[1:4]
 
-iris_catboost <-
+iris_lightgbm <-
   boost_tree(trees = 2, mode = "classification") %>%
-  set_engine("catboost")
+  set_engine("lightgbm")
 
 # ------------------------------------------------------------------------------
 
-test_that('catboost execution, classification', {
+test_that('lightgbm execution, classification', {
 
-  skip_if_not_installed("catboost")
+  skip_if_not_installed("lightgbm")
 
   expect_error(
     res <- parsnip::fit(
-      iris_catboost,
+      iris_lightgbm,
       Species ~ Sepal.Width + Sepal.Length,
       data = iris,
       control = ctrl
@@ -72,7 +70,7 @@ test_that('catboost execution, classification', {
   )
   expect_error(
     res <- parsnip::fit_xy(
-      iris_catboost,
+      iris_lightgbm,
       x = iris[, num_pred],
       y = iris$Species,
       control = ctrl
@@ -85,7 +83,7 @@ test_that('catboost execution, classification', {
 
   expect_error(
     res <- parsnip::fit(
-      iris_catboost,
+      iris_lightgbm,
       Species ~ novar,
       data = iris,
       control = ctrl
@@ -94,32 +92,32 @@ test_that('catboost execution, classification', {
 })
 
 
-test_that('catboost classification prediction', {
+test_that('lightgbm classification prediction', {
 
-  skip_if_not_installed("catboost")
+  skip_if_not_installed("lightgbm")
 
-  library(catboost)
+  library(lightgbm)
   xy_fit <- fit_xy(
-    iris_catboost,
+    iris_lightgbm,
     x = iris[, num_pred],
     y = iris$Species,
     control = ctrl
   )
 
-  xy_pred <- predict(xy_fit$fit, new_data = catboost::catboost.load_pool(iris[1:8, num_pred]), type = "class")
+  xy_pred <- predict(xy_fit$fit, new_data = lightgbm::lightgbm.load_pool(iris[1:8, num_pred]), type = "class")
   xy_pred <- factor(levels(iris$Species)[xy_pred + 1], levels = levels(iris$Species))
 
   expect_equal(xy_pred, predict(xy_fit, new_data = iris[1:8, num_pred], type = "class")$.pred_class)
   expect_equal(xy_pred, predict(xy_fit, new_data = iris[1:8, rev(num_pred)], type = "class")$.pred_class)
 
   form_fit <- fit(
-    iris_catboost,
+    iris_lightgbm,
     Species ~ .,
     data = iris,
     control = ctrl
   )
 
-  form_pred <- predict(form_fit$fit, new_data = catboost::catboost.load_pool(iris[1:8, num_pred]), type = "class")
+  form_pred <- predict(form_fit$fit, new_data = lightgbm::lightgbm.load_pool(iris[1:8, num_pred]), type = "class")
   form_pred <- factor(levels(iris$Species)[form_pred + 1], levels = levels(iris$Species))
   expect_equal(form_pred, predict(form_fit, new_data = iris[1:8, num_pred], type = "class")$.pred_class)
   expect_equal(form_pred, predict(form_fit, new_data = iris[1:8, rev(num_pred)], type = "class")$.pred_class)
@@ -130,11 +128,11 @@ test_that('catboost classification prediction', {
 num_pred <- names(mtcars)[3:6]
 
 car_basic <- boost_tree(mode = "regression") %>%
-  set_engine("catboost", leaf_estimation_method = -1)
+  set_engine("lightgbm", leaf_estimation_method = -1)
 
-test_that('catboost execution, regression', {
+test_that('lightgbm execution, regression', {
 
-  skip_if_not_installed("catboost")
+  skip_if_not_installed("lightgbm")
 
   expect_error(
     res <- parsnip::fit(
@@ -158,11 +156,11 @@ test_that('catboost execution, regression', {
 
 car_basic <-
   boost_tree(mode = "regression") %>%
-  set_engine("catboost")
+  set_engine("lightgbm")
 
-test_that('catboost regression prediction', {
+test_that('lightgbm regression prediction', {
 
-  skip_if_not_installed("catboost")
+  skip_if_not_installed("lightgbm")
 
   xy_fit <- fit_xy(
     car_basic,
@@ -171,7 +169,7 @@ test_that('catboost regression prediction', {
     control = ctrl
   )
 
-  xy_pred <- predict(xy_fit$fit, new_data = catboost::catboost.load_pool(mtcars[1:8, -1]))
+  xy_pred <- predict(xy_fit$fit, new_data = lightgbm::lightgbm.load_pool(mtcars[1:8, -1]))
   expect_equal(xy_pred, predict(xy_fit, new_data = mtcars[1:8, -1])$.pred)
 
   form_fit <- fit(
@@ -181,7 +179,7 @@ test_that('catboost regression prediction', {
     control = ctrl
   )
 
-  form_pred <- predict(form_fit$fit, new_data = catboost::catboost.load_pool(mtcars[1:8, -1]))
+  form_pred <- predict(form_fit$fit, new_data = lightgbm::lightgbm.load_pool(mtcars[1:8, -1]))
   expect_equal(form_pred, predict(form_fit, new_data = mtcars[1:8, -1])$.pred)
 })
 
@@ -189,15 +187,15 @@ test_that('catboost regression prediction', {
 
 test_that('submodel prediction', {
 
-  skip_if_not_installed("catboost")
-  library(catboost)
+  skip_if_not_installed("lightgbm")
+  library(lightgbm)
 
   reg_fit <-
     boost_tree(trees = 20, mode = "regression") %>%
-    set_engine("catboost") %>%
+    set_engine("lightgbm") %>%
     fit(mpg ~ ., data = mtcars[-(1:4), ])
 
-  x <-  catboost::catboost.load_pool(mtcars[1:4, -1])
+  x <-  lightgbm::lightgbm.load_pool(mtcars[1:4, -1])
 
   pruned_pred <- predict(reg_fit$fit, x, ntree_end = 5)
 
@@ -209,10 +207,10 @@ test_that('submodel prediction', {
   vars <- c("female", "tenure", "total_charges", "phone_service", "monthly_charges")
   class_fit <-
     boost_tree(trees = 20, mode = "classification") %>%
-    set_engine("catboost") %>%
+    set_engine("lightgbm") %>%
     fit(churn ~ ., data = wa_churn[-(1:4), c("churn", vars)])
 
-  x <-  catboost::catboost.load_pool(wa_churn[1:4, vars])
+  x <-  lightgbm::lightgbm.load_pool(wa_churn[1:4, vars])
 
   pred_class <- predict(class_fit$fit, x, ntree_end = 5)
 
@@ -228,7 +226,7 @@ test_that('submodel prediction', {
 
 model_with_tune <-
   boost_tree(mode = "regression", trees = tune()) %>%
-  set_engine("catboost")
+  set_engine("lightgbm")
 
 rs <- rsample::vfold_cv(data = mtcars[-(1:4), ], 2)
 tg <- tune::tune_grid(
@@ -239,7 +237,7 @@ tg <- tune::tune_grid(
 
 final_model <- finalize_model(model_with_tune, select_best(tg, "rsq"))
 
-test_that('tune package for catboost works', {
+test_that('tune package for lightgbm works', {
   expect_equal(class(rlang::quo_get_expr(final_model$args$trees)), "integer")
 })
 
@@ -248,11 +246,11 @@ final_model <-
   boost_tree(mode = "regression", trees = 5) %>%
   set_engine("xgboost")
 
-test_that('recipe and workflows packages for catboost works', {
+test_that('recipe and workflows packages for lightgbm works', {
 
   final_model <-
     parsnip::boost_tree(mode = "regression", trees = 5) %>%
-    parsnip::set_engine("catboost")
+    parsnip::set_engine("lightgbm")
 
   rec <- recipes::recipe(mpg ~ ., mtcars) %>%
     recipes::step_center(recipes::all_outcomes())
