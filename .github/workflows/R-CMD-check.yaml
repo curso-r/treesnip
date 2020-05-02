@@ -15,7 +15,7 @@ jobs:
       - name: Install dependencies
         run: |
           install.packages(c("remotes", "rcmdcheck"))
-          renotes::install_url("https://github.com/catboost/catboost/releases/download/v0.23/catboost-R-Windows-0.23.tgz", INSTALL_opts = c("--no-multiarch"))
+          remotes::install_url("https://github.com/catboost/catboost/releases/download/v0.23/catboost-R-Windows-0.23.tgz", INSTALL_opts = c("--no-multiarch"))
           remotes::install_deps(dependencies = TRUE)
         shell: Rscript {0}
       - name: Check
