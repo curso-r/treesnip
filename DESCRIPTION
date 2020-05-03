@@ -17,7 +17,8 @@ Roxygen: list(markdown = TRUE)
 Suggests: 
     testthat (>= 2.1.0),
     tidymodels,
-    catboost
+    catboost,
+    modeldata
 RoxygenNote: 7.1.0
 Imports: 
     parsnip,
