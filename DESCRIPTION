@@ -18,7 +18,8 @@ Suggests:
     testthat (>= 2.1.0),
     tidymodels,
     catboost,
-    modeldata
+    modeldata,
+    lightgbm
 RoxygenNote: 7.1.0
 Imports: 
     parsnip,
