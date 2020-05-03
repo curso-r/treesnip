@@ -19,5 +19,5 @@ jobs:
           remotes::install_deps(dependencies = TRUE, INSTALL_opts = c("--no-multiarch"))
         shell: Rscript {0}
       - name: Check
-        run: rcmdcheck::rcmdcheck(args = "--no-manual", error_on = "error")
+        run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--no-multiarch"), error_on = "error")
         shell: Rscript {0}
