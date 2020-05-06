@@ -59,7 +59,7 @@ tibble::tribble(
   "train",         ok("x"),      ok("x"),      ok(),
   "predict",       ok("x"),      ok("x"),      ok(),
   "multi_predict", ok("n"),      ok("x"),      ok(),
-  "tests",         ok("x"),      ok(),         ok()
+  "tests",         ok("x"),      ok("x"),         ok()
 ) %>% kable() 
 ```
 

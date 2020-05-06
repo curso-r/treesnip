@@ -219,20 +219,25 @@ train_lightgbm <- function(x, y, max_depth = 6, num_iterations = 100, learning_r
     bagging_fraction <- 1
   }
 
-  # loss -------------------------
+  # loss and num_class -------------------------
   if (is.numeric(y)) {
+    num_class <- 1
     objective <- "regression"
   } else {
     lvl <- levels(y)
+    lvls <- length(lvl)
     y <- as.numeric(y) - 1
-    if (length(lvl) == 2) {
+    if (lvls == 2) {
+      num_class <- 1
       objective <- "binary"
     } else {
+      num_class <- lvls
       objective <- "multiclass"
     }
   }
 
   arg_list <- list(
+    num_class = num_class,
     objective = objective,
     num_iterations = num_iterations,
     learning_rate = learning_rate,

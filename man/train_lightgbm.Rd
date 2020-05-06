@@ -7,7 +7,7 @@
 train_lightgbm(
   x,
   y,
-  max_depth = -1,
+  max_depth = 6,
   num_iterations = 100,
   learning_rate = 0.1,
   feature_fraction = 1,

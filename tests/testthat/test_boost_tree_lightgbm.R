@@ -1,5 +1,6 @@
 library(testthat)
 library(parsnip)
+library(treesnip)
 
 context("boosted tree execution with lightgbm")
 # source("helper-objects.R") from parsnip -------------------------------------
@@ -32,17 +33,13 @@ test_that("lightgbm fit works", {
   mtcars_class <- mtcars
   mtcars_class$vs <- factor(mtcars_class$vs)
   lightgbm_fit <- parsnip::fit(model, vs ~ . , data = mtcars_class)
-  expect_equal(class(lightgbm_fit), c("_lightgbm.Model", "model_fit"))
-  expect_equal(class(lightgbm_fit$fit$feature_importances), c("matrix"))
-  expect_equal(sum(lightgbm_fit$fit$feature_importances > 0), 2)
+  expect_equal(class(lightgbm_fit), c("_lgb.Booster", "model_fit"))
 
   # multi-classification
   mtcars_class <- mtcars
   mtcars_class$cyl <- factor(mtcars_class$cyl)
   lightgbm_fit <- parsnip::fit(model, cyl ~ . , data = mtcars_class)
-  expect_equal(class(lightgbm_fit), c("_lightgbm.Model", "model_fit"))
-  expect_equal(class(lightgbm_fit$fit$feature_importances), c("matrix"))
-  expect_equal(sum(lightgbm_fit$fit$feature_importances > 0), 2)
+  expect_equal(class(lightgbm_fit), c("_lgb.Booster", "model_fit"))
 })
 
 # ------------------------------------------------------------------------------
@@ -96,7 +93,6 @@ test_that('lightgbm classification prediction', {
 
   skip_if_not_installed("lightgbm")
 
-  library(lightgbm)
   xy_fit <- fit_xy(
     iris_lightgbm,
     x = iris[, num_pred],

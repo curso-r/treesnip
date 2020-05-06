@@ -1,5 +1,6 @@
 library(testthat)
 library(parsnip)
+library(treesnip)
 
 context("boosted tree execution with catboost")
 # source("helper-objects.R") from parsnip -------------------------------------
@@ -255,7 +256,7 @@ test_that('recipe and workflows packages for catboost works', {
     parsnip::set_engine("catboost")
 
   rec <- recipes::recipe(mpg ~ ., mtcars) %>%
-    recipes::step_center(recipes::all_outcomes())
+    recipes::step_center(recipes::all_outcomes(), skip = TRUE)
 
   wf <- workflows::workflow() %>%
     workflows::add_model(final_model) %>%
@@ -267,6 +268,6 @@ test_that('recipe and workflows packages for catboost works', {
   )
 
   # not working with transformations on outcomes
-  expect_success(workflows:::predict.workflow(model, new_data = mtcars[1:4, ], outcomes = FALSE))
+  expect_equal(class(workflows:::predict.workflow(model, new_data = mtcars[1:4, ]))[1], "tbl_df")
 })
 
