@@ -113,6 +113,7 @@ add_boost_tree_catboost <- function() {
     )
   )
 
+  # model args ----------------------------------------------------
   parsnip::set_model_arg(
     model = "boost_tree",
     eng = "catboost",

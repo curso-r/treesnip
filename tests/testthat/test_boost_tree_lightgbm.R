@@ -1,6 +1,7 @@
 library(testthat)
 library(parsnip)
 library(treesnip)
+library(tidyverse)
 
 context("boosted tree execution with lightgbm")
 # source("helper-objects.R") from parsnip -------------------------------------
@@ -18,16 +19,74 @@ quiet_ctrl    <- control_parsnip(verbosity = 0, catch = TRUE)
 run_glmnet <- utils::compareVersion('3.6.0', as.character(getRversion())) > 0
 # end source("helper-objects.R") from parsnip ----------------------------------
 
+modelxgb <- parsnip::boost_tree(mtry = 1, trees = 1, tree_depth = 4, min_n = 2)
+modelxgb <- parsnip::set_mode(modelxgb, "regression")
+modelxgb <- parsnip::set_engine(modelxgb, "xgboost")
 
+xgb_fit <- parsnip::fit(modelxgb, Sepal.Length ~ Species + Sepal.Width , data = iris)
+predict(xgb_fit, iris)$.pred
 
 test_that("lightgbm fit works", {
-  model <- parsnip::boost_tree(mtry = 2, trees = 1, tree_depth = 4, min_n = 2)
+  model <- parsnip::boost_tree(mtry = 1, trees = 1, tree_depth = 4, min_n = 2)
   model <- parsnip::set_mode(model, "regression")
-  model <- parsnip::set_engine(model, "lightgbm")
+  model <- parsnip::set_engine(model, "lightgbm", seed = 2)
 
   # regression
-  lightgbm_fit <- parsnip::fit(model, Sepal.Length ~ . , data = iris)
+  lightgbm_fit <- parsnip::fit(model, Sepal.Length ~ ., data = iris)
+  lightgbm_fit <- parsnip::fit_xy(model, y = iris$Sepal.Length, x = iris %>% select(-Sepal.Length))
   expect_equal(class(lightgbm_fit), c("_lgb.Booster", "model_fit"))
+  x <- as.matrix(model.matrix(Sepal.Length ~ ., iris)[,-1])
+  # x <- as.matrix(iris)
+  lgb_Data <- lightgbm::lgb.Dataset(data = x, label = iris$Sepal.Length, feature_pre_filter = FALSE)
+
+  arg_list2 <- list(
+    seed = 2,
+    objective = "regression",
+    num_iterations = 1,
+    num_class = 1,
+    learning_rate = 0.1,
+    max_depth = 4,
+    feature_fraction = 0.2,
+    min_data_in_leaf = 2,
+    min_gain_to_split = 0,
+    bagging_fraction = 1,
+    num_leaves = 15
+  )
+  set.seed(1)
+  lightgbm_fit2 <- lightgbm::lgb.train(data = lgb_Data, params = arg_list2)
+  arg_list3 <- list(
+    seed = 2,
+    objective = "regression",
+    num_iterations = 1,
+    learning_rate = 0.1,
+    max_depth = 4,
+    feature_fraction = 0.2,
+    min_data_in_leaf = 2,
+    min_gain_to_split = 0,
+    bagging_fraction = 1,
+    num_leaves = 15
+  )
+  set.seed(1)
+  lightgbm_fit3 <- lightgbm::lgb.train(data = lgb_Data, params = arg_list3)
+  expect_equal(lightgbm_fit3, lightgbm_fit2)
+  expect_equal(predict(lightgbm_fit2, x), predict(lightgbm_fit3, x))
+  expect_equal(predict(lightgbm_fit, iris %>% select(-Sepal.Length))$.pred, predict(lightgbm_fit3, x))
+
+  full_join(
+    lightgbm_fit$fit$.__enclos_env__$private$train_set$.__enclos_env__$private$params %>%
+      enframe() %>%
+      mutate(value = map_if(value, ~length(.) > 0, as.character)) %>%
+      mutate(value = map_if(value, ~length(.) == 0, "")) %>%
+      unnest(value),
+    lightgbm_fit3$.__enclos_env__$private$train_set$.__enclos_env__$private$params %>%
+      enframe() %>%
+      mutate(value = map_if(value, ~length(.) > 0, as.character)) %>%
+      mutate(value = map_if(value, ~length(.) == 0, "")) %>%
+      unnest(value),
+    by = "name"
+  )
+
+
 
   # classification
   mtcars_class <- mtcars

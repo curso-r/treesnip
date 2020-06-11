@@ -4,7 +4,6 @@
 #' @return NULL
 #' @export
 add_boost_tree_lightgbm <- function() {
-
   parsnip::set_model_engine("boost_tree", mode = "regression", eng = "lightgbm")
   parsnip::set_model_engine("boost_tree", mode = "classification", eng = "lightgbm")
   parsnip::set_dependency("boost_tree", eng = "lightgbm", pkg = "lightgbm")
@@ -32,9 +31,9 @@ add_boost_tree_lightgbm <- function() {
       func = c(fun = "predict"),
       args = list(
         object = quote(object$fit),
-        data = quote(as.matrix(new_data)),
+        data = quote(model.matrix(~., data = new_data)),
         reshape = TRUE,
-        rawscore = FALSE
+        rawscore = TRUE
       )
     )
   )
@@ -123,6 +122,7 @@ add_boost_tree_lightgbm <- function() {
     )
   )
 
+  # model args ----------------------------------------------------
   parsnip::set_model_arg(
     model = "boost_tree",
     eng = "lightgbm",
@@ -163,7 +163,6 @@ add_boost_tree_lightgbm <- function() {
     func = list(pkg = "dials", fun = "min_n"),
     has_submodel = FALSE
   )
-
   parsnip::set_model_arg(
     model = "boost_tree",
     eng = "lightgbm",
@@ -172,7 +171,6 @@ add_boost_tree_lightgbm <- function() {
     func = list(pkg = "dials", fun = "loss_reduction"),
     has_submodel = FALSE
   )
-
   parsnip::set_model_arg(
     model = "boost_tree",
     eng = "lightgbm",
@@ -206,7 +204,7 @@ add_boost_tree_lightgbm <- function() {
 train_lightgbm <- function(x, y, max_depth = 6, num_iterations = 100, learning_rate = 0.1,
                            feature_fraction = 1, min_data_in_leaf = 1, min_gain_to_split = 0, bagging_fraction = 1, ...) {
 
-  # rsm ------------------------------
+  # feature_fraction ------------------------------
   if(!is.null(feature_fraction)) {
     feature_fraction <- feature_fraction/ncol(x)
   }
@@ -248,8 +246,15 @@ train_lightgbm <- function(x, y, max_depth = 6, num_iterations = 100, learning_r
     bagging_fraction = bagging_fraction
   )
 
+
+  if (is.data.frame(x)) {
+    x <- model.matrix(~., data = x)
+  }
+
   # train ------------------------
-  d <- lightgbm::lgb.Dataset(data = as.matrix(x), label = y)
+  # browser()
+  d <- lightgbm::lgb.Dataset(data = x, label = y, feature_pre_filter = FALSE)
+  # d <- lightgbm::lgb.Dataset(data = x, label = iris$Sepal.Length, feature_pre_filter = FALSE)
 
   # override or add some other args
   others <- list(...)
@@ -263,7 +268,8 @@ train_lightgbm <- function(x, y, max_depth = 6, num_iterations = 100, learning_r
     params = arg_list
   )
   call <- parsnip:::make_call(fun = "lgb.train", ns = "lightgbm", main_args)
-  rlang::eval_tidy(call, env = rlang::current_env())
+  a <- rlang::eval_tidy(call, env = rlang::current_env())
+  a
 }
 
 #' Model predictions across many sub-models
@@ -338,7 +344,7 @@ lightgbm_by_tree <- function(tree, object, new_data, type, ...) {
 
 #' @export
 predict.lightgbm.Model <- function(object, new_data, type = "RawFormulaVal", ...) {
-
+  browser()
   if (!inherits(new_data, "lightgbm.Pool")) {
     new_data <- lightgbm::lightgbm.load_pool(new_data)
   }

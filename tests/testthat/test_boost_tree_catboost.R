@@ -28,7 +28,7 @@ test_that("catboost fit works", {
   # regression
   catboost_fit <- parsnip::fit(model, mpg ~ . , data = mtcars)
   expect_equal(class(catboost_fit), c("_catboost.Model", "model_fit"))
-  expect_equal(class(catboost_fit$fit$feature_importances), c("matrix"))
+  expect_equal(class(catboost_fit$fit$feature_importances)[1], c("matrix"))
   expect_equal(sum(catboost_fit$fit$feature_importances > 0), 2)
 
   # classification
@@ -36,7 +36,7 @@ test_that("catboost fit works", {
   mtcars_class$vs <- factor(mtcars_class$vs)
   catboost_fit <- parsnip::fit(model, vs ~ . , data = mtcars_class)
   expect_equal(class(catboost_fit), c("_catboost.Model", "model_fit"))
-  expect_equal(class(catboost_fit$fit$feature_importances), c("matrix"))
+  expect_equal(class(catboost_fit$fit$feature_importances)[1], c("matrix"))
   expect_equal(sum(catboost_fit$fit$feature_importances > 0), 2)
 
   # multi-classification
@@ -44,7 +44,7 @@ test_that("catboost fit works", {
   mtcars_class$cyl <- factor(mtcars_class$cyl)
   catboost_fit <- parsnip::fit(model, cyl ~ . , data = mtcars_class)
   expect_equal(class(catboost_fit), c("_catboost.Model", "model_fit"))
-  expect_equal(class(catboost_fit$fit$feature_importances), c("matrix"))
+  expect_equal(class(catboost_fit$fit$feature_importances)[1], c("matrix"))
   expect_equal(sum(catboost_fit$fit$feature_importances > 0), 2)
 })
 
@@ -52,8 +52,7 @@ test_that("catboost fit works", {
 
 num_pred <- names(iris)[1:4]
 
-iris_catboost <-
-  boost_tree(trees = 2, mode = "classification") %>%
+iris_catboost <- boost_tree(trees = 2, mode = "classification") %>%
   set_engine("catboost")
 
 # ------------------------------------------------------------------------------
@@ -193,16 +192,15 @@ test_that('submodel prediction', {
   skip_if_not_installed("catboost")
   library(catboost)
 
-  reg_fit <-
-    boost_tree(trees = 20, mode = "regression") %>%
+  reg_fit <- boost_tree(trees = 20, mode = "regression") %>%
     set_engine("catboost") %>%
     fit(mpg ~ ., data = mtcars[-(1:4), ])
 
-  x <-  catboost::catboost.load_pool(mtcars[1:4, -1])
+  x <- catboost::catboost.load_pool(mtcars[1:4, -1])
 
   pruned_pred <- predict(reg_fit$fit, x, ntree_end = 5)
 
-  mp_res <- multi_predict(reg_fit, new_data = mtcars[1:4, -1], trees = 5)
+  mp_res <- multi_predict(object = reg_fit, new_data = mtcars[1:4, -1], trees = 5)
   mp_res <- do.call("rbind", mp_res$.pred)
   expect_equal(mp_res[[".pred"]], pruned_pred)
 
