@@ -247,14 +247,10 @@ train_lightgbm <- function(x, y, max_depth = 6, num_iterations = 100, learning_r
   )
 
 
+  browser()
   if (is.data.frame(x)) {
     x <- model.matrix(~., data = x)
   }
-
-  # train ------------------------
-  # browser()
-  d <- lightgbm::lgb.Dataset(data = x, label = y, feature_pre_filter = FALSE)
-  # d <- lightgbm::lgb.Dataset(data = x, label = iris$Sepal.Length, feature_pre_filter = FALSE)
 
   # override or add some other args
   others <- list(...)
@@ -263,13 +259,28 @@ train_lightgbm <- function(x, y, max_depth = 6, num_iterations = 100, learning_r
   if(is.null(others$num_leaves)) others$num_leaves = 2^max_depth - 1
 
   arg_list <- purrr::compact(c(arg_list, others))
-  main_args <- list(
-    data = quote(d),
+
+
+  # train ------------------------
+  d_a <- lightgbm::lgb.Dataset(data = x, label = y, feature_pre_filter = FALSE)
+  d_b <- lightgbm::lgb.Dataset(data = x, label = iris$Sepal.Length, feature_pre_filter = FALSE)
+
+  main_args_a <- list(
+    data = quote(d_a),
     params = arg_list
   )
-  call <- parsnip:::make_call(fun = "lgb.train", ns = "lightgbm", main_args)
-  a <- rlang::eval_tidy(call, env = rlang::current_env())
-  a
+  main_args_b <- list(
+    data = quote(d_b),
+    params = arg_list
+  )
+  call_a <- parsnip:::make_call(fun = "lgb.train", ns = "lightgbm", main_args_a)
+  a <- rlang::eval_tidy(call_a, env = rlang::current_env())
+  call_b <- parsnip:::make_call(fun = "lgb.train", ns = "lightgbm", main_args_b)
+  b <- rlang::eval_tidy(call_b, env = rlang::current_env())
+
+  # predict(a, model.matrix(Sepal.Length ~., data = iris), predict_disable_shape_check = FALSE)
+  lightgbm:::predict.lgb.Booster(a, data = x)
+  lightgbm:::predict.lgb.Booster(b, data = x)
 }
 
 #' Model predictions across many sub-models
