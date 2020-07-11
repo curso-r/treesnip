@@ -24,11 +24,24 @@ This package provides the following bindings for parsnip package:
 
 ## Installation
 
-You can install the released version of treesnip from
-[CRAN](https://CRAN.R-project.org) with:
+Not on CRAN yet.
 
 ``` r
 remotes::install_github("curso-r/treesnip")
+```
+
+## Minimal Example
+
+``` r
+# decision_tree
+model <- parsnip::decision_tree()
+parsnip::set_engine(model, "tree")
+
+# boost_tree
+model <- parsnip::boost_tree(mtry = 1, trees = 50)
+
+parsnip::set_engine(model, "catboost")
+parsnip::set_engine(model, "lightgbm")
 ```
 
 ## Roadmap
@@ -91,7 +104,7 @@ set\_fit
 
 <td style="text-align:left;">
 
-:red\_circle:
+:heavy\_check\_mark:
 
 </td>
 
@@ -119,7 +132,7 @@ set\_model\_arg
 
 <td style="text-align:left;">
 
-:red\_circle:
+:heavy\_check\_mark:
 
 </td>
 
@@ -147,7 +160,7 @@ set\_pred
 
 <td style="text-align:left;">
 
-:red\_circle:
+:heavy\_check\_mark:
 
 </td>
 
@@ -175,7 +188,7 @@ train
 
 <td style="text-align:left;">
 
-:red\_circle:
+:heavy\_check\_mark:
 
 </td>
 
@@ -203,7 +216,7 @@ predict
 
 <td style="text-align:left;">
 
-:red\_circle:
+:heavy\_check\_mark:
 
 </td>
 
@@ -253,13 +266,13 @@ tests
 
 <td style="text-align:left;">
 
-:red\_circle:
+:heavy\_check\_mark:
 
 </td>
 
 <td style="text-align:left;">
 
-:red\_circle:
+:heavy\_check\_mark:
 
 </td>
 
@@ -532,15 +545,15 @@ library(tidymodels)
 #> Registered S3 method overwritten by 'xts':
 #>   method     from
 #>   as.zoo.xts zoo
-#> -- Attaching packages -------------------------------------- tidymodels 0.1.0 --
-#> v broom     0.5.5      v recipes   0.1.10
+#> -- Attaching packages ----------------------------------------------------------------------------- tidymodels 0.1.0 --
+#> v broom     0.5.6      v recipes   0.1.10
 #> v dials     0.0.5      v rsample   0.0.5 
-#> v dplyr     0.8.5      v tibble    2.1.3 
-#> v ggplot2   3.3.0      v tune      0.0.1 
+#> v dplyr     1.0.0      v tibble    3.0.1 
+#> v ggplot2   3.3.0      v tune      0.1.0 
 #> v infer     0.5.1      v workflows 0.1.1 
-#> v parsnip   0.0.5      v yardstick 0.0.6 
-#> v purrr     0.3.3
-#> -- Conflicts ----------------------------------------- tidymodels_conflicts() --
+#> v parsnip   0.1.2      v yardstick 0.0.6 
+#> v purrr     0.3.4
+#> -- Conflicts -------------------------------------------------------------------------------- tidymodels_conflicts() --
 #> x purrr::discard()    masks scales::discard()
 #> x tidyr::extract()    masks magrittr::extract()
 #> x dplyr::filter()     masks stats::filter()
