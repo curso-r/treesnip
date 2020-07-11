@@ -4,7 +4,8 @@ test_that("catboost", {
   model <- parsnip::set_engine(model, "catboost")
 
   expect_regression_works(parsnip::set_mode(model, "regression"))
-  expect_classification_works(parsnip::set_mode(model, "classification"))
+  expect_multiclass_classification_works(parsnip::set_mode(model, "classification"))
+  expect_binary_classification_works(parsnip::set_mode(model, "classification"))
 
 })
 
