@@ -95,11 +95,12 @@ add_boost_tree_lightgbm <- function() {
     eng = "lightgbm",
     mode = "classification",
     type = "class",
-    value = list(
+    value = parsnip::pred_value_template(
       pre = NULL,
       post = NULL,
-      func = c(pkg = NULL, fun = "predict"),
-      args = list(object = quote(object$fit), data = quote(new_data))
+      func = c(pkg = "treesnip", fun = "predict_lightgbm_classification_class"),
+      object = quote(object),
+      new_data = quote(new_data)
     )
   )
 
@@ -108,24 +109,12 @@ add_boost_tree_lightgbm <- function() {
     eng = "lightgbm",
     mode = "classification",
     type = "prob",
-    value = list(
-      pre = as.matrix,
-      post = NULL,
-      func = c(pkg = "treesnip", fun = "predict_lightgbm_classification_prob"),
-      args = list(object = quote(object), new_data = quote(new_data))
-    )
-  )
-
-  parsnip::set_pred(
-    model = "boost_tree",
-    eng = "lightgbm",
-    mode = "classification",
-    type = "raw",
-    value = list(
+    value = parsnip::pred_value_template(
       pre = NULL,
       post = NULL,
-      func = c(fun = "predict"),
-      args = list(object = quote(object$fit), data = quote(new_data))
+      func = c(pkg = "treesnip", fun = "predict_lightgbm_classification_prob"),
+      object = quote(object),
+      new_data = quote(new_data)
     )
   )
 
@@ -350,8 +339,18 @@ lightgbm_by_tree <- function(tree, object, new_data, type, ...) {
 #' @export
 predict_lightgbm_classification_prob <- function(object, new_data) {
   p <- predict(object$fit, new_data, reshape = TRUE)
+  colnames(p) <- object$lvl
   tibble::as_tibble(p)
 }
+
+#' @export
+predict_lightgbm_classification_class <- function(object, new_data) {
+  p <- predict_lightgbm_classification_prob(object, new_data)
+  q <- apply(p, 1, function(x) which.max(x))
+  names(p)[q]
+}
+
+
 
 
 
