@@ -11,15 +11,17 @@ expect_regression_works <- function(model) {
   expect_mse(pred, mtcars$mpg, less_than = mean(mtcars$mpg))
 }
 
-expect_classification_works <- function(model) {
+expect_multiclass_classification_works <- function(model) {
 
   adj <- parsnip::fit(model, cyl ~ ., data = mtcars_class)
 
   pred <- predict(adj, mtcars_class, type = "prob")
   expect_equal(nrow(pred), nrow(mtcars_class))
+  expect_equal(names(pred), c(".pred_4", ".pred_6", ".pred_8"))
 
   pred <- predict(adj, mtcars_class)
   expect_equal(nrow(pred), nrow(mtcars_class))
+  expect_equal(names(pred), ".pred_class")
 
   expect_accuracy(pred$.pred_class, mtcars_class$cyl, at_least = 0.7)
 }
