@@ -20,6 +20,28 @@ add_boost_tree_lightgbm <- function() {
     )
   )
 
+  parsnip::set_encoding(
+    model = "boost_tree",
+    mode = "regression",
+    eng = "lightgbm",
+    options = list(
+      predictor_indicators = "none",
+      compute_intercept = FALSE,
+      remove_intercept = FALSE
+    )
+  )
+
+  parsnip::set_encoding(
+    model = "boost_tree",
+    mode = "classification",
+    eng = "lightgbm",
+    options = list(
+      predictor_indicators = "none",
+      compute_intercept = FALSE,
+      remove_intercept = FALSE
+    )
+  )
+
   parsnip::set_pred(
     model = "boost_tree",
     eng = "lightgbm",
