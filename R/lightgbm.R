@@ -13,7 +13,7 @@ add_boost_tree_lightgbm <- function() {
     eng = "lightgbm",
     mode = "regression",
     value = list(
-      interface = "data.frame",
+      interface = "matrix",
       protect = c("x", "y"),
       func = c(pkg = "treesnip", fun = "train_lightgbm"),
       defaults = list()
@@ -53,7 +53,7 @@ add_boost_tree_lightgbm <- function() {
       func = c(fun = "predict"),
       args = list(
         object = quote(object$fit),
-        data = quote(model.matrix(~., data = new_data)),
+        data = quote(new_data),
         reshape = TRUE,
         rawscore = TRUE
       )
@@ -71,7 +71,7 @@ add_boost_tree_lightgbm <- function() {
       func = c(fun = "predict"),
       args = list(
         object = quote(object$fit),
-        data = quote(as.matrix(new_data)),
+        data = quote(new_data),
         reshape = TRUE,
         rawscore = TRUE
       )
@@ -83,7 +83,7 @@ add_boost_tree_lightgbm <- function() {
     eng = "lightgbm",
     mode = "classification",
     value = list(
-      interface = "data.frame",
+      interface = "matrix",
       protect = c("x", "y"),
       func = c(pkg = "treesnip", fun = "train_lightgbm"),
       defaults = list()
@@ -97,16 +97,9 @@ add_boost_tree_lightgbm <- function() {
     type = "class",
     value = list(
       pre = NULL,
-      post = function(x, object) {
-        if (is.vector(x)) {
-          x <- ifelse(x >= 0.5, object$lvl[2], object$lvl[1])
-        } else {
-          x <- object$lvl[apply(x, 1, which.max)]
-        }
-        x
-      },
+      post = NULL,
       func = c(pkg = NULL, fun = "predict"),
-      args = list(object = quote(object$fit), new_data = quote(new_data))
+      args = list(object = quote(object$fit), data = quote(new_data))
     )
   )
 
@@ -116,18 +109,10 @@ add_boost_tree_lightgbm <- function() {
     mode = "classification",
     type = "prob",
     value = list(
-      pre = NULL,
-      post = function(x, object) {
-        if (is.vector(x)) {
-          x <- tibble::tibble(v1 = 1 - x, v2 = x)
-        } else {
-          x <- tibble::as_tibble(x)
-        }
-        colnames(x) <- object$lvl
-        x
-      },
-      func = c(pkg = NULL, fun = "predict"),
-      args = list(object = quote(object$fit), new_data = quote(new_data))
+      pre = as.matrix,
+      post = NULL,
+      func = c(pkg = "treesnip", fun = "predict_lightgbm_classification_prob"),
+      args = list(object = quote(object), new_data = quote(new_data))
     )
   )
 
@@ -140,7 +125,7 @@ add_boost_tree_lightgbm <- function() {
       pre = NULL,
       post = NULL,
       func = c(fun = "predict"),
-      args = list(object = quote(object$fit), new_data = quote(new_data))
+      args = list(object = quote(object$fit), data = quote(new_data))
     )
   )
 
@@ -226,6 +211,10 @@ add_boost_tree_lightgbm <- function() {
 train_lightgbm <- function(x, y, max_depth = 6, num_iterations = 100, learning_rate = 0.1,
                            feature_fraction = 1, min_data_in_leaf = 1, min_gain_to_split = 0, bagging_fraction = 1, ...) {
 
+
+  force(x)
+  force(y)
+
   # feature_fraction ------------------------------
   if(!is.null(feature_fraction)) {
     feature_fraction <- feature_fraction/ncol(x)
@@ -268,15 +257,8 @@ train_lightgbm <- function(x, y, max_depth = 6, num_iterations = 100, learning_r
     bagging_fraction = bagging_fraction
   )
 
-
-  if (is.data.frame(x)) {
-    x <- model.matrix(~., data = x)
-  }
-
   # train ------------------------
-  # browser()
   d <- lightgbm::lgb.Dataset(data = x, label = y, feature_pre_filter = FALSE)
-  # d <- lightgbm::lgb.Dataset(data = x, label = iris$Sepal.Length, feature_pre_filter = FALSE)
 
   # override or add some other args
   others <- list(...)
@@ -291,6 +273,7 @@ train_lightgbm <- function(x, y, max_depth = 6, num_iterations = 100, learning_r
   )
   call <- parsnip:::make_call(fun = "lgb.train", ns = "lightgbm", main_args)
   a <- rlang::eval_tidy(call, env = rlang::current_env())
+  class(a) <- c("lightgbm.Model", class(a))
   a
 }
 
@@ -365,23 +348,11 @@ lightgbm_by_tree <- function(tree, object, new_data, type, ...) {
 }
 
 #' @export
-predict.lightgbm.Model <- function(object, new_data, type = "RawFormulaVal", ...) {
-  browser()
-  if (!inherits(new_data, "lightgbm.Pool")) {
-    new_data <- lightgbm::lightgbm.load_pool(new_data)
-  }
-
-  type <- switch (
-    type,
-    "raw" = "RawFormulaVal",
-    "numeric" = "RawFormulaVal",
-    "class" = "Class",
-    "prob" = "Probability",
-    "RawFormulaVal"
-  )
-
-  lightgbm::lightgbm.predict(object, new_data, prediction_type = type, ...)
+predict_lightgbm_classification_prob <- function(object, new_data) {
+  p <- predict(object$fit, new_data, reshape = TRUE)
+  tibble::as_tibble(p)
 }
+
 
 
 
