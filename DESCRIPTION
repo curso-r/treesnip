@@ -1,5 +1,5 @@
 Package: treesnip
-Title: Decision Tree Engine for 'Parsnip'
+Title: Tree Based Model Engines for 'Parsnip'
 Version: 0.0.0.9000
 Authors@R: 
     person(given = "Daniel",
@@ -8,8 +8,7 @@ Authors@R:
            email = "dfalbel@curso-r.com"
            )
 URL: https://github.com/curso-r/treesnip
-Description: Provides a new engine for decision trees following the 'parsnip'
-  conventions.
+Description: Provides tree, catboost and lightgbm engines for 'parsnip'.
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
@@ -18,12 +17,12 @@ Suggests:
     testthat (>= 2.1.0),
     tidymodels,
     catboost,
+    tree,
     modeldata,
     lightgbm
 RoxygenNote: 7.1.1
 Imports: 
     parsnip,
-    tree,
     rlang,
     purrr,
     tibble,
