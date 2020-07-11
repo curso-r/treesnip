@@ -31,17 +31,6 @@ add_boost_tree_lightgbm <- function() {
     )
   )
 
-  parsnip::set_encoding(
-    model = "boost_tree",
-    mode = "classification",
-    eng = "lightgbm",
-    options = list(
-      predictor_indicators = "none",
-      compute_intercept = FALSE,
-      remove_intercept = FALSE
-    )
-  )
-
   parsnip::set_pred(
     model = "boost_tree",
     eng = "lightgbm",
@@ -50,30 +39,10 @@ add_boost_tree_lightgbm <- function() {
     value = list(
       pre = NULL,
       post = NULL,
-      func = c(fun = "predict"),
+      func = c(pkg = "treesnip", fun = "predict_lightgbm_regression_numeric"),
       args = list(
-        object = quote(object$fit),
-        data = quote(new_data),
-        reshape = TRUE,
-        rawscore = TRUE
-      )
-    )
-  )
-
-  parsnip::set_pred(
-    model = "boost_tree",
-    eng = "lightgbm",
-    mode = "regression",
-    type = "raw",
-    value = list(
-      pre = NULL,
-      post = NULL,
-      func = c(fun = "predict"),
-      args = list(
-        object = quote(object$fit),
-        data = quote(new_data),
-        reshape = TRUE,
-        rawscore = TRUE
+        object = quote(object),
+        new_data = quote(new_data)
       )
     )
   )
@@ -87,6 +56,17 @@ add_boost_tree_lightgbm <- function() {
       protect = c("x", "y"),
       func = c(pkg = "treesnip", fun = "train_lightgbm"),
       defaults = list()
+    )
+  )
+
+  parsnip::set_encoding(
+    model = "boost_tree",
+    mode = "classification",
+    eng = "lightgbm",
+    options = list(
+      predictor_indicators = "none",
+      compute_intercept = FALSE,
+      remove_intercept = FALSE
     )
   )
 
@@ -259,97 +239,23 @@ train_lightgbm <- function(x, y, max_depth = 6, num_iterations = 100, learning_r
 
 
   # train ------------------------
-  d_a <- lightgbm::lgb.Dataset(data = x, label = y, feature_pre_filter = FALSE)
-  d_b <- lightgbm::lgb.Dataset(data = x, label = iris$Sepal.Length, feature_pre_filter = FALSE)
+  d <- lightgbm::lgb.Dataset(data = x, label = y, feature_pre_filter = FALSE)
 
-  main_args_a <- list(
-    data = quote(d_a),
-    params = arg_list
-  )
-  main_args_b <- list(
-    data = quote(d_b),
+  main_args <- list(
+    data = quote(d),
     params = arg_list
   )
 
   call <- parsnip:::make_call(fun = "lgb.train", ns = "lightgbm", main_args)
-  a <- rlang::eval_tidy(call, env = rlang::current_env())
-  class(a) <- c("lightgbm.Model", class(a))
-  a
-}
-
-#' Model predictions across many sub-models
-#'
-#' For some models, predictions can be made on sub-models in the model object.
-#'
-#' @param object A model_fit object.
-#' @param ... Optional arguments to pass to predict.model_fit(type = "raw") such as type.
-#' @param new_data A rectangular data object, such as a data frame.
-#' @param type A single character value or NULL. Possible values are "numeric", "class", "prob", "conf_int", "pred_int", "quantile", or "raw". When NULL, predict() will choose an appropriate value based on the model's mode.
-#' @param trees An integer vector for the number of trees in the ensemble.
-#'
-#' @export
-#' @importFrom purrr map_df
-multi_predict._lightgbm.Model <- function(object, new_data, type = NULL, trees = NULL, ...) {
-  if (any(names(rlang::enquos(...)) == "newdata")) {
-    rlang::abort("Did you mean to use `new_data` instead of `newdata`?")
-  }
-
-  if (is.null(trees)) {
-    trees <- object$fit$tree_count
-  }
-  trees <- sort(trees)
-
-  if (is.null(type)) {
-    if (object$spec$mode == "classification")
-      type <- "Class"
-    else
-      type <- "RawFormulaVal"
-  } else {
-    type <- switch (
-      type,
-      "raw" = "RawFormulaVal",
-      "numeric" = "RawFormulaVal",
-      "class" = "Class",
-      "prob" = "Probability"
-    )
-  }
-
-  res <- map_df(trees, lightgbm_by_tree, object = object, new_data = new_data, type = type, ...)
-  res <- dplyr::arrange(res, .row, trees)
-  res <- split(res[, -1], res$.row)
-  names(res) <- NULL
-
-  tibble::tibble(.pred = res)
-
-}
-
-lightgbm_by_tree <- function(tree, object, new_data, type, ...) {
-
-  pred <- predict.lightgbm.Model(object$fit, new_data, ntree_end = tree, type = type, ...)
-
-  # switch based on prediction type
-  if (object$spec$mode == "regression") {
-    pred <- tibble::tibble(.pred = pred)
-    nms <- names(pred)
-  } else {
-    if (type == "class") {
-      pred <- object$spec$method$pred$class$post(pred, object)
-      pred <- tibble::tibble(.pred_class = factor(pred, levels = object$lvl))
-    } else {
-      pred <- object$spec$method$pred$prob$post(pred, object)
-      pred <- tibble::as_tibble(pred)
-      names(pred) <- paste0(".pred_", names(pred))
-    }
-    nms <- names(pred)
-  }
-  pred[["trees"]] <- tree
-  pred[[".row"]] <- 1:nrow(new_data)
-  pred[, c(".row", "trees", nms)]
+  rlang::eval_tidy(call, env = rlang::current_env())
 }
 
 #' @export
 predict_lightgbm_classification_prob <- function(object, new_data) {
   p <- predict(object$fit, new_data, reshape = TRUE)
+  if(is.vector(p)) {
+    p <- tibble::tibble(p1 = 1 - p, p2 = p)
+  }
   colnames(p) <- object$lvl
   tibble::as_tibble(p)
 }
@@ -359,6 +265,11 @@ predict_lightgbm_classification_class <- function(object, new_data) {
   p <- predict_lightgbm_classification_prob(object, new_data)
   q <- apply(p, 1, function(x) which.max(x))
   names(p)[q]
+}
+
+#' @export
+predict_lightgbm_regression_numeric <- function(object, new_data) {
+  p <- predict(object$fit, new_data, reshape = TRUE)
 }
 
 
