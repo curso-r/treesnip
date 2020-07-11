@@ -1,12 +1,9 @@
-library(modeldata)
-library(parsnip)
-
-data("wa_churn")
-data("lending_club")
+mtcars_class <- mtcars
+mtcars_class$cyl <- as.factor(mtcars$cyl)
 
 expect_regression_works <- function(model) {
 
-  adj <- fit(model, mpg ~ ., data = mtcars)
+  adj <- parsnip::fit(model, mpg ~ ., data = mtcars)
 
   pred <- predict(adj, mtcars)
   expect_equal(nrow(pred), nrow(mtcars))
@@ -16,15 +13,15 @@ expect_regression_works <- function(model) {
 
 expect_classification_works <- function(model) {
 
-  adj <- fit(model, churn ~ ., data = wa_churn)
+  adj <- parsnip::fit(model, cyl ~ ., data = mtcars_class)
 
-  pred <- predict(adj, wa_churn, type = "prob")
-  expect_equal(nrow(pred), nrow(wa_churn))
+  pred <- predict(adj, mtcars_class, type = "prob")
+  expect_equal(nrow(pred), nrow(mtcars_class))
 
-  pred <- predict(adj, wa_churn)
-  expect_equal(nrow(pred), nrow(wa_churn))
+  pred <- predict(adj, mtcars_class)
+  expect_equal(nrow(pred), nrow(mtcars_class))
 
-  expect_accuracy(pred$.pred_class, wa_churn$churn, at_least = 0.7)
+  expect_accuracy(pred$.pred_class, mtcars_class$cyl, at_least = 0.7)
 }
 
 expect_mse <- function(pred, true, less_than) {
