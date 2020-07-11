@@ -250,9 +250,17 @@ train_lightgbm <- function(x, y, max_depth = 6, num_iterations = 100, learning_r
   rlang::eval_tidy(call, env = rlang::current_env())
 }
 
+#' predict_lightgbm_classification_prob
+#'
+#' Not intended for direct use.
+#'
+#' @param object a fitted object.
+#'
+#' @param new_data data frame in which to look for variables with which to predict.
+#'
 #' @export
 predict_lightgbm_classification_prob <- function(object, new_data) {
-  p <- predict(object$fit, new_data, reshape = TRUE)
+  p <- stats::predict(object$fit, new_data, reshape = TRUE)
   if(is.vector(p)) {
     p <- tibble::tibble(p1 = 1 - p, p2 = p)
   }
@@ -260,6 +268,14 @@ predict_lightgbm_classification_prob <- function(object, new_data) {
   tibble::as_tibble(p)
 }
 
+#' predict_lightgbm_classification_class
+#'
+#' Not intended for direct use.
+#'
+#' @param object a fitted object.
+#'
+#' @param new_data data frame in which to look for variables with which to predict.
+#'
 #' @export
 predict_lightgbm_classification_class <- function(object, new_data) {
   p <- predict_lightgbm_classification_prob(object, new_data)
@@ -267,9 +283,18 @@ predict_lightgbm_classification_class <- function(object, new_data) {
   names(p)[q]
 }
 
+
+#' predict_lightgbm_regression_numeric
+#'
+#' Not intended for direct use.
+#'
+#' @param object a fitted object.
+#'
+#' @param new_data data frame in which to look for variables with which to predict.
+#'
 #' @export
 predict_lightgbm_regression_numeric <- function(object, new_data) {
-  p <- predict(object$fit, new_data, reshape = TRUE)
+  p <- stats::predict(object$fit, new_data, reshape = TRUE)
 }
 
 

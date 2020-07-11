@@ -17,7 +17,6 @@ Suggests:
     testthat (>= 2.1.0),
     tidymodels,
     catboost,
-    tree,
     modeldata,
     lightgbm
 RoxygenNote: 7.1.1
@@ -25,5 +24,7 @@ Imports:
     parsnip,
     rlang,
     purrr,
+    tree,
     tibble,
-    dplyr
+    dplyr,
+    stats
