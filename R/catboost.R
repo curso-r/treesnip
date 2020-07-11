@@ -21,6 +21,28 @@ add_boost_tree_catboost <- function() {
     )
   )
 
+  parsnip::set_encoding(
+    model = "boost_tree",
+    mode = "regression",
+    eng = "catboost",
+    options = list(
+      predictor_indicators = "none",
+      compute_intercept = FALSE,
+      remove_intercept = FALSE
+    )
+  )
+
+  parsnip::set_encoding(
+    model = "boost_tree",
+    mode = "classification",
+    eng = "catboost",
+    options = list(
+      predictor_indicators = "none",
+      compute_intercept = FALSE,
+      remove_intercept = FALSE
+    )
+  )
+
   parsnip::set_pred(
     model = "boost_tree",
     eng = "catboost",
