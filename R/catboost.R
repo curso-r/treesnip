@@ -112,7 +112,7 @@ add_boost_tree_catboost <- function() {
         if (is.vector(x)) {
           x <- tibble::tibble(v1 = 1 - x, v2 = x)
         } else {
-          x <- tibble::as_tibble(x)
+          x <- tibble::as_tibble(x, .name_repair = make.names)
         }
         colnames(x) <- object$lvl
         x
@@ -332,7 +332,7 @@ catboost_by_tree <- function(tree, object, new_data, type, ...) {
       pred <- tibble::tibble(.pred_class = factor(pred, levels = object$lvl))
     } else {
       pred <- object$spec$method$pred$prob$post(pred, object)
-      pred <- tibble::as_tibble(pred)
+      pred <- tibble::as_tibble(pred, .name_repair = make.names)
       names(pred) <- paste0(".pred_", names(pred))
     }
     nms <- names(pred)
