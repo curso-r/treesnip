@@ -180,7 +180,6 @@ add_boost_tree_lightgbm <- function() {
 train_lightgbm <- function(x, y, max_depth = 6, num_iterations = 100, learning_rate = 0.1,
                            feature_fraction = 1, min_data_in_leaf = 1, min_gain_to_split = 0, bagging_fraction = 1, ...) {
 
-
   force(x)
   force(y)
 
@@ -225,9 +224,6 @@ train_lightgbm <- function(x, y, max_depth = 6, num_iterations = 100, learning_r
     min_gain_to_split = min_gain_to_split,
     bagging_fraction = bagging_fraction
   )
-
-  # train ------------------------
-  d <- lightgbm::lgb.Dataset(data = x, label = y, feature_pre_filter = FALSE)
 
   # override or add some other args
   others <- list(...)
