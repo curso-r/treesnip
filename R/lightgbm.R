@@ -113,7 +113,7 @@ add_boost_tree_lightgbm <- function() {
     parsnip = "trees",
     original = "num_iterations",
     func = list(pkg = "dials", fun = "trees"),
-    has_submodel = TRUE
+    has_submodel = FALSE
   )
   parsnip::set_model_arg(
     model = "boost_tree",
@@ -291,6 +291,7 @@ predict_lightgbm_classification_class <- function(object, new_data) {
 #' @export
 predict_lightgbm_regression_numeric <- function(object, new_data) {
   p <- stats::predict(object$fit, new_data, reshape = TRUE)
+  p
 }
 
 

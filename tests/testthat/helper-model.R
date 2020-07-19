@@ -46,6 +46,23 @@ expect_multiclass_classification_works <- function(model) {
   expect_accuracy(pred$.pred_class, mtcars_class$cyl, at_least = 0.7)
 }
 
+expect_can_tune_boost_tree <- function(model) {
+
+  grid_df <- data.frame(trees = c(10, 20))
+  resamples <- rsample::vfold_cv(mtcars, v = 2)
+  adj <- tune::tune_grid(
+    model,
+    mpg ~ .,
+    resamples = resamples,
+    grid = 3,
+    metrics = yardstick::metric_set(yardstick::rmse)
+  )
+
+  expect_equal(nrow(adj), nrow(resamples))
+  expect_equal(nrow(tune::collect_metrics(adj)), 3)
+
+}
+
 expect_mse <- function(pred, true, less_than) {
   mse <- sqrt(mean((pred$.pred - true)^2))
   expect_true(mse < less_than)
