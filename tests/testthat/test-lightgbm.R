@@ -19,7 +19,7 @@ test_that("lightgbm with tune", {
 
 test_that("lightgbm mtry", {
 
-  hiperparameters <- data.frame(mtry = c(1, 2, 3, 6))
+  hiperparameters <- data.frame(mtry = c(1, 2, 6))
   for(i in 1:nrow(hiperparameters)) {
     model <- parsnip::boost_tree(mtry = hiperparameters$mtry[i])
     expect_all_modes_works(model, 'lightgbm')
@@ -29,7 +29,7 @@ test_that("lightgbm mtry", {
 
 test_that("lightgbm trees", {
 
-  hiperparameters <- data.frame(trees = c(1, 20, 300, 6000))
+  hiperparameters <- data.frame(trees = c(1, 20, 300))
   for(i in 1:nrow(hiperparameters)) {
     model <- parsnip::boost_tree(trees = hiperparameters$trees[i])
     expect_all_modes_works(model, 'lightgbm')
