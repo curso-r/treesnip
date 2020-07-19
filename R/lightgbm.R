@@ -229,7 +229,10 @@ train_lightgbm <- function(x, y, max_depth = 6, num_iterations = 100, learning_r
   others <- list(...)
   others <- others[!(names(others) %in% c("data", names(arg_list)))]
 
-  if(is.null(others$num_leaves)) others$num_leaves = 2^max_depth - 1
+  if(is.null(others$num_leaves)) {
+    others$num_leaves = max(2^min(max_depth, 17) - 1, 2)
+    warning("max_depth > 17, num_leaves truncated to 2^17 - 1")
+  }
 
   arg_list <- purrr::compact(c(arg_list, others))
 
