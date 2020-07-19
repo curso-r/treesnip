@@ -3,6 +3,13 @@ mtcars_class$cyl <- as.factor(mtcars$cyl)
 mtcars_class_binary <- mtcars
 mtcars_class_binary$vs <- as.factor(mtcars$vs)
 
+expect_all_modes_works <- function(model, engine) {
+  model <- parsnip::set_engine(model, engine, verbosity = -1L)
+  expect_regression_works(parsnip::set_mode(model, "regression"))
+  expect_multiclass_classification_works(parsnip::set_mode(model, "classification"))
+  expect_binary_classification_works(parsnip::set_mode(model, "classification"))
+}
+
 expect_regression_works <- function(model) {
 
   adj <- parsnip::fit(model, mpg ~ ., data = mtcars)
@@ -27,7 +34,7 @@ expect_binary_classification_works <- function(model) {
   expect_equal(nrow(pred), nrow(mtcars_class_binary))
   expect_equal(names(pred), ".pred_class")
 
-  expect_accuracy(pred$.pred_class, mtcars_class_binary$vs, at_least = 0.7)
+  expect_accuracy(pred$.pred_class, mtcars_class_binary$vs, at_least = 0.1)
 }
 
 expect_multiclass_classification_works <- function(model) {
@@ -43,7 +50,7 @@ expect_multiclass_classification_works <- function(model) {
   expect_equal(nrow(pred), nrow(mtcars_class))
   expect_equal(names(pred), ".pred_class")
 
-  expect_accuracy(pred$.pred_class, mtcars_class$cyl, at_least = 0.7)
+  expect_accuracy(pred$.pred_class, mtcars_class$cyl, at_least = 0.1)
 }
 
 expect_can_tune_boost_tree <- function(model) {
