@@ -13,6 +13,7 @@ expect_all_modes_works <- function(model, engine) {
   expect_regression_works(parsnip::set_mode(model, "regression"))
   expect_multiclass_classification_works(parsnip::set_mode(model, "classification"))
   expect_binary_classification_works(parsnip::set_mode(model, "classification"))
+  expect_categorical_vars_works(parsnip::set_mode(model, "regression"))
 }
 
 expect_regression_works <- function(model) {
@@ -56,6 +57,25 @@ expect_multiclass_classification_works <- function(model) {
   expect_equal(names(pred), ".pred_class")
 
   expect_accuracy(pred$.pred_class, mtcars_class$cyl, at_least = 0.1)
+}
+
+expect_categorical_vars_works <- function(model) {
+
+  df <- data.frame(
+    x1 = as.factor(sample(letters, 1000, replace = TRUE)),
+    y = runif(1000)
+  )
+
+  adj <- parsnip::fit(model, y ~ ., data = df)
+
+  p <- predict(adj, df)
+
+  expect_true(length(unique(p$.pred)) <= length(unique(df$x1)))
+
+  expect_error(
+    predict(adj, data.frame(x1 = c("str", "str2"), stringsAsFactors = FALSE))
+  )
+
 }
 
 expect_can_tune_boost_tree <- function(model) {
