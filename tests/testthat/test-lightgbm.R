@@ -1,6 +1,6 @@
 test_that("lightgbm", {
 
-  model <- parsnip::boost_tree(mtry = 1, trees = 50, tree_depth = 5)
+  model <- parsnip::boost_tree(mtry = 1, trees = 50, tree_depth = 15)
 
   expect_all_modes_works(model, 'lightgbm')
 })
