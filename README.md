@@ -126,7 +126,7 @@ set\_model\_arg
 
 <td style="text-align:left;">
 
-:red\_circle:
+:heavy\_check\_mark:
 
 </td>
 
@@ -238,7 +238,7 @@ multi\_predict
 
 <td style="text-align:left;">
 
-:heavy\_check\_mark:
+:red\_circle:
 
 </td>
 
@@ -542,24 +542,19 @@ bagging\_fraction
 ``` r
 library(treesnip)
 library(tidymodels)
-#> Registered S3 method overwritten by 'xts':
-#>   method     from
-#>   as.zoo.xts zoo
-#> -- Attaching packages ----------------------------------------------------------------------------- tidymodels 0.1.0 --
-#> v broom     0.5.6      v recipes   0.1.10
-#> v dials     0.0.5      v rsample   0.0.5 
-#> v dplyr     1.0.0      v tibble    3.0.1 
-#> v ggplot2   3.3.0      v tune      0.1.0 
-#> v infer     0.5.1      v workflows 0.1.1 
-#> v parsnip   0.1.2      v yardstick 0.0.6 
-#> v purrr     0.3.4
-#> -- Conflicts -------------------------------------------------------------------------------- tidymodels_conflicts() --
+#> ── Attaching packages ──────────────────────────────────────────────────────────────────────────────────────────────────── tidymodels 0.1.0 ──
+#> ✓ broom     0.5.6      ✓ recipes   0.1.12
+#> ✓ dials     0.0.7      ✓ rsample   0.0.7 
+#> ✓ dplyr     1.0.0      ✓ tibble    3.0.1 
+#> ✓ ggplot2   3.3.1      ✓ tune      0.1.1 
+#> ✓ infer     0.5.1      ✓ workflows 0.1.1 
+#> ✓ parsnip   0.1.2      ✓ yardstick 0.0.6 
+#> ✓ purrr     0.3.4
+#> ── Conflicts ─────────────────────────────────────────────────────────────────────────────────────────────────────── tidymodels_conflicts() ──
 #> x purrr::discard()    masks scales::discard()
-#> x tidyr::extract()    masks magrittr::extract()
 #> x dplyr::filter()     masks stats::filter()
 #> x dplyr::group_rows() masks kableExtra::group_rows()
 #> x dplyr::lag()        masks stats::lag()
-#> x ggplot2::margin()   masks dials::margin()
 #> x purrr::set_names()  masks magrittr::set_names()
 #> x recipes::step()     masks stats::step()
 
@@ -577,7 +572,7 @@ mod <- decision_tree(min_n = 0, cost_complexity = 0) %>%
 mod
 #> parsnip model object
 #> 
-#> Fit time:  0ms 
+#> Fit time:  5ms 
 #> node), split, n, deviance, yval
 #>       * denotes terminal node
 #> 

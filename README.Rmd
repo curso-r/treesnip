@@ -69,11 +69,11 @@ ok <- function(x = "") {
 tibble::tribble(
   ~fun,              ~tree,    ~catboost,    ~lightGBM,
   "set_fit",       ok("x"),      ok("x"),      ok("x"),
-  "set_model_arg", ok("x"),      ok(),         ok("x"),
+  "set_model_arg", ok("x"),      ok("x"),      ok("x"),
   "set_pred",      ok("x"),      ok("x"),      ok("x"),
   "train",         ok("x"),      ok("x"),      ok("x"),
   "predict",       ok("x"),      ok("x"),      ok("x"),
-  "multi_predict", ok("n"),      ok("x"),      ok(),
+  "multi_predict", ok("n"),      ok(),      ok(),
   "tests",         ok("x"),      ok("x"),      ok("x")
 ) %>% kable() 
 ```
