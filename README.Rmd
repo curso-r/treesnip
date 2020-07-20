@@ -66,25 +66,6 @@ parsnip::set_engine(model, "lightgbm")
 ```
 
 
-## Roadmap
-
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
-ok <- function(x = "") {
-  if(x == "x") ":heavy_check_mark:"
-  else if(x == "n") ":white_circle:"
-  else ":red_circle:"
-}
-tibble::tribble(
-  ~fun,              ~tree,    ~catboost,    ~lightGBM,
-  "set_fit",       ok("x"),      ok("x"),      ok("x"),
-  "set_model_arg", ok("x"),      ok("x"),      ok("x"),
-  "set_pred",      ok("x"),      ok("x"),      ok("x"),
-  "train",         ok("x"),      ok("x"),      ok("x"),
-  "predict",       ok("x"),      ok("x"),      ok("x"),
-  "multi_predict", ok("n"),      ok(),      ok(),
-  "tests",         ok("x"),      ok("x"),      ok("x")
-) %>% kable() 
-```
 
 
 ## Hyperparameters map
@@ -114,33 +95,22 @@ tibble::tribble(
 ) %>% kable(escape = FALSE) 
 ```
 
+## Roadmap
 
-## Example
-
-```{r}
-library(treesnip)
-library(tidymodels)
-
-set.seed(1)
-df <- tibble(
-  x = runif(10), 
-  y = 2* x + rnorm(10, sd = 0.1)
-)
-
-mod <- decision_tree(min_n = 0, cost_complexity = 0) %>%
-  set_engine("tree") %>%
-  set_mode("regression") %>% 
-  fit(y ~ x, df)
-
-mod
-
-df %>% 
-  mutate(pred = predict(mod, df)$.pred) %>% 
-  ggplot(aes(x = x)) +
-  geom_point(aes( y = y)) +
-  geom_step(aes(y = pred))
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+ok <- function(x = "") {
+  if(x == "x") ":heavy_check_mark:"
+  else if(x == "n") ":white_circle:"
+  else ":red_circle:"
+}
+tibble::tribble(
+  ~fun,              ~tree,    ~catboost,    ~lightGBM,
+  "set_fit",       ok("x"),      ok("x"),      ok("x"),
+  "set_model_arg", ok("x"),      ok("x"),      ok("x"),
+  "set_pred",      ok("x"),      ok("x"),      ok("x"),
+  "train",         ok("x"),      ok("x"),      ok("x"),
+  "predict",       ok("x"),      ok("x"),      ok("x"),
+  "multi_predict", ok("n"),      ok(),      ok(),
+  "tests",         ok("x"),      ok("x"),      ok("x")
+) %>% kable() 
 ```
-
-
-
-
