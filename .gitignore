@@ -2,3 +2,6 @@
 .Rhistory
 catboost_info
 tests/testthat/catboost_info
+inst/doc
+doc
+Meta

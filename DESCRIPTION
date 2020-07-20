@@ -18,7 +18,9 @@ Suggests:
     tidymodels,
     catboost,
     modeldata,
-    lightgbm
+    lightgbm,
+    knitr,
+    rmarkdown
 RoxygenNote: 7.1.1
 Imports: 
     parsnip,
@@ -28,3 +30,4 @@ Imports:
     tibble,
     dplyr,
     stats
+VignetteBuilder: knitr

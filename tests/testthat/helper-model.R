@@ -40,7 +40,7 @@ expect_binary_classification_works <- function(model) {
   expect_equal(nrow(pred), nrow(mtcars_class_binary))
   expect_equal(names(pred), ".pred_class")
 
-  expect_accuracy(pred$.pred_class, mtcars_class_binary$vs, at_least = 0.1)
+  expect_accuracy(pred$.pred_class, mtcars_class_binary$vs, at_least = 0.4)
 }
 
 expect_multiclass_classification_works <- function(model) {
@@ -56,7 +56,7 @@ expect_multiclass_classification_works <- function(model) {
   expect_equal(nrow(pred), nrow(mtcars_class))
   expect_equal(names(pred), ".pred_class")
 
-  expect_accuracy(pred$.pred_class, mtcars_class$cyl, at_least = 0.1)
+  expect_accuracy(pred$.pred_class, mtcars_class$cyl, at_least = 0.4)
 }
 
 expect_categorical_vars_works <- function(model) {

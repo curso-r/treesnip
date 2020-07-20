@@ -1,0 +1,78 @@
+---
+title: "Working with lightgbm and catboost"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Working with lightgbm and catboost}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(tidymodels)
+library(treesnip)
+data("diamonds", package = "ggplot2")
+
+# test/train splits
+diamonds_splits <- initial_split(diamonds)
+```
+
+## Model spec
+
+Both lightgbm and catboost are engines for `parsnip::boost_tree()`. All main hiperparameters are available, except `loss_reduction` for catboost.
+
+```{r}
+model_spec <- boost_tree(mtry = 5, trees = 500) %>% set_mode("regression")
+
+# model specs
+lightgbm_model <- model_spec %>% set_engine("lightgbm")
+catboost_model <- model_spec %>% set_engine("catboost")
+
+#workflows
+lightgbm_wf <- workflow() %>% add_model(lightgbm_model)
+catboost_wf <- workflow() %>% add_model(catboost_model)
+```
+
+## Recipes and categorical features
+
+Differently from xgboost, lightgbm and catboost deals with nominal columns natively. No `step_dummy()` or any other encoding required.
+
+### Encodings benchmark
+
+In fact, avoiding `step_dummy()` seems to be a good idea when using lightgbm or catboost.
+
+```{r}
+rec_ordered <- recipe(price ~ ., data = training(diamonds_splits)) 
+rec_dummy <- rec_ordered %>% step_dummy(all_nominal())
+rec_factor <- rec_ordered %>% step_unorder(all_nominal())
+
+# glimpse(juice(prep(rec_factor)))
+
+lightgbm_fit_ordered <- last_fit(add_recipe(lightgbm_wf, rec_ordered), split = diamonds_splits)
+lightgbm_fit_dummy <- last_fit(add_recipe(lightgbm_wf, rec_dummy), split = diamonds_splits)
+lightgbm_fit_factor <- last_fit(add_recipe(lightgbm_wf, rec_factor), split = diamonds_splits)
+catboost_fit_ordered <- last_fit(add_recipe(catboost_wf, rec_ordered), split = diamonds_splits)
+catboost_fit_dummy <- last_fit(add_recipe(catboost_wf, rec_dummy), split = diamonds_splits)
+catboost_fit_factor <- last_fit(add_recipe(catboost_wf, rec_factor), split = diamonds_splits)
+
+bind_rows(
+  collect_metrics(lightgbm_fit_ordered) %>% mutate(model = "lightgbm", encode = "ordered"),
+  collect_metrics(lightgbm_fit_dummy) %>% mutate(model = "lightgbm", encode = "dummy"),
+  collect_metrics(lightgbm_fit_factor) %>% mutate(model = "lightgbm", encode = "factor"),
+  collect_metrics(catboost_fit_ordered) %>% mutate(model = "catboost", encode = "ordered"),
+  collect_metrics(catboost_fit_dummy) %>% mutate(model = "catboost", encode = "dummy"),
+  collect_metrics(catboost_fit_factor) %>% mutate(model = "catboost", encode = "factor")
+) %>%
+  filter(.metric == "rmse") %>%
+  ggplot(aes(x = encode, y = .estimate, group = model, colour = model)) +
+  geom_point() +
+  geom_line() +
+  labs(y = "RMSE (the lower the better)") +
+  theme_minimal(20)
+```
