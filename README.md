@@ -30,6 +30,13 @@ Not on CRAN yet.
 remotes::install_github("curso-r/treesnip")
 ```
 
+**Hint:** for easy lightgbm installation, check the {rightgbm} package.
+
+``` r
+devtools::install_github("curso-r/rightgbm")
+rightgbm::install_lightgbm()
+```
+
 ## Minimal Example
 
 ``` r
@@ -572,7 +579,7 @@ mod <- decision_tree(min_n = 0, cost_complexity = 0) %>%
 mod
 #> parsnip model object
 #> 
-#> Fit time:  5ms 
+#> Fit time:  6ms 
 #> node), split, n, deviance, yval
 #>       * denotes terminal node
 #> 
@@ -603,4 +610,4 @@ df %>%
   geom_step(aes(y = pred))
 ```
 
-<img src="man/figures/README-unnamed-chunk-5-1.png" width="100%" />
+<img src="man/figures/README-unnamed-chunk-6-1.png" width="100%" />
