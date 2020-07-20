@@ -71,6 +71,11 @@ expect_categorical_vars_works <- function(model) {
     predict(adj, data.frame(x1 = c("str", "str2"), stringsAsFactors = FALSE))
   )
 
+  expect_equal(
+    predict(adj, data.frame(x1 = factor(c("a", "b"), levels = c("b", "a"))))$.pred,
+    predict(adj, data.frame(x1 = factor(c("a", "b"), levels = c("a", "b"))))$.pred
+  )
+
 }
 
 expect_can_tune_boost_tree <- function(model) {
