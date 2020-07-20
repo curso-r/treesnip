@@ -66,6 +66,11 @@ expect_categorical_vars_works <- function(model) {
   p <- predict(adj, df)
 
   expect_true(length(unique(p$.pred)) <= length(unique(df$x1)))
+
+  expect_error(
+    predict(adj, data.frame(x1 = c("str", "str2"), stringsAsFactors = FALSE))
+  )
+
 }
 
 expect_can_tune_boost_tree <- function(model) {

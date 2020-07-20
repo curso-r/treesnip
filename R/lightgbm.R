@@ -157,12 +157,25 @@ add_boost_tree_lightgbm <- function() {
   )
 }
 
-prepare_df <- function(x) {
+prepare_df <- function(x, y = NULL) {
+  categorical_cols <- NULL
   for (i in seq_along(x)) {
-    if (is.factor(x[[i]]))
+    if (is.factor(x[[i]])) {
       x[[i]] <- as.integer(x[[i]]) - 1L
+      categorical_cols <- c(categorical_cols, i)
+    }
   }
-  as.matrix(x)
+  x <- as.matrix(x)
+
+  if (is.null(y))
+    return(x)
+
+  lightgbm::lgb.Dataset(
+    data = as.matrix(x),
+    label = y,
+    categorical_feature = categorical_cols,
+    feature_pre_filter = FALSE
+  )
 }
 
 #' Boosted trees via lightgbm
@@ -247,7 +260,7 @@ train_lightgbm <- function(x, y, max_depth = 6, num_iterations = 100, learning_r
 
 
   # train ------------------------
-  d <- lightgbm::lgb.Dataset(data = prepare_df(x), label = y, feature_pre_filter = FALSE)
+  d <- prepare_df(x, y)
 
   main_args <- list(
     data = quote(d),
