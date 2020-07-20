@@ -4,7 +4,12 @@ mtcars_class_binary <- mtcars
 mtcars_class_binary$vs <- as.factor(mtcars$vs)
 
 expect_all_modes_works <- function(model, engine) {
-  model <- parsnip::set_engine(model, engine, verbosity = -1L)
+  if(engine == "lightgbm") {
+    model <- parsnip::set_engine(model, engine, verbosity = -1L)
+  } else {
+    model <- parsnip::set_engine(model, engine)
+  }
+
   expect_regression_works(parsnip::set_mode(model, "regression"))
   expect_multiclass_classification_works(parsnip::set_mode(model, "classification"))
   expect_binary_classification_works(parsnip::set_mode(model, "classification"))
