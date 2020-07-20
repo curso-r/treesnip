@@ -13,7 +13,7 @@ add_boost_tree_lightgbm <- function() {
     eng = "lightgbm",
     mode = "regression",
     value = list(
-      interface = "matrix",
+      interface = "data.frame",
       protect = c("x", "y"),
       func = c(pkg = "treesnip", fun = "train_lightgbm"),
       defaults = list()
@@ -52,7 +52,7 @@ add_boost_tree_lightgbm <- function() {
     eng = "lightgbm",
     mode = "classification",
     value = list(
-      interface = "matrix",
+      interface = "data.frame",
       protect = c("x", "y"),
       func = c(pkg = "treesnip", fun = "train_lightgbm"),
       defaults = list()
@@ -239,7 +239,7 @@ train_lightgbm <- function(x, y, max_depth = 6, num_iterations = 100, learning_r
 
 
   # train ------------------------
-  d <- lightgbm::lgb.Dataset(data = x, label = y, feature_pre_filter = FALSE)
+  d <- lightgbm::lgb.Dataset(data = as.matrix(x), label = y, feature_pre_filter = FALSE)
 
   main_args <- list(
     data = quote(d),
@@ -260,7 +260,7 @@ train_lightgbm <- function(x, y, max_depth = 6, num_iterations = 100, learning_r
 #'
 #' @export
 predict_lightgbm_classification_prob <- function(object, new_data) {
-  p <- stats::predict(object$fit, new_data, reshape = TRUE)
+  p <- stats::predict(object$fit, as.matrix(new_data), reshape = TRUE)
   if(is.vector(p)) {
     p <- tibble::tibble(p1 = 1 - p, p2 = p)
   }
@@ -278,7 +278,7 @@ predict_lightgbm_classification_prob <- function(object, new_data) {
 #'
 #' @export
 predict_lightgbm_classification_class <- function(object, new_data) {
-  p <- predict_lightgbm_classification_prob(object, new_data)
+  p <- predict_lightgbm_classification_prob(object, as.matrix(new_data))
   q <- apply(p, 1, function(x) which.max(x))
   names(p)[q]
 }
@@ -294,7 +294,7 @@ predict_lightgbm_classification_class <- function(object, new_data) {
 #'
 #' @export
 predict_lightgbm_regression_numeric <- function(object, new_data) {
-  p <- stats::predict(object$fit, new_data, reshape = TRUE)
+  p <- stats::predict(object$fit, as.matrix(new_data), reshape = TRUE)
   p
 }
 
