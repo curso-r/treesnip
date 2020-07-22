@@ -250,6 +250,9 @@ train_lightgbm <- function(x, y, max_depth = 6, num_iterations = 100, learning_r
   others <- list(...)
   others <- others[!(names(others) %in% c("data", names(arg_list)))]
 
+  # parallelism should be explicitly specified by the user
+  if(all(sapply(others[c("num_threads", "num_thread", "nthread", "nthreads", "n_jobs")], is.null))) others$num_threads <- 1L
+
   if(is.null(others$num_leaves)) {
     others$num_leaves = max(2^min(max_depth, 17) - 1, 2)
     if(max_depth > 17)
