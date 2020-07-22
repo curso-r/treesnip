@@ -261,6 +261,7 @@ train_catboost <- function(x, y, depth = 6, iterations = 1000, learning_rate = N
   if(is.null(others$logging_level)) others$logging_level = "Silent"
   if(is.null(others$bootstrap_type)) others$bootstrap_type = "Bernoulli" # subsample as is
   if(is.null(others$sampling_frequency)) others$sampling_frequency = "PerTree" # subsample as is
+  if(is.null(others$thread_count)) others$thread_count = 1L # parallelism should be explicitly specified by the user
 
   arg_list <- purrr::compact(c(arg_list, others))
   main_args <- list(
