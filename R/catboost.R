@@ -194,6 +194,25 @@ add_boost_tree_catboost <- function() {
   )
 }
 
+prepare_df_catboost <- function(x, y = NULL) {
+  categorical_cols <- categorical_columns(x)
+  x <- categorical_features_to_int(x, categorical_cols)
+  x <- as.matrix(x)
+
+  # catboost uses 0-indexed feature cols
+  if(!is.null(categorical_cols)){categorical_cols <- categorical_cols-1}
+
+  if (is.null(y))
+    return(x)
+
+  catboost::catboost.load_pool(
+    data = as.matrix(x),
+    label = y,
+    cat_features = categorical_cols
+  )
+}
+
+
 #' Boosted trees via catboost
 #'
 #' `catboost_train` is a wrapper for `catboost` tree-based models
@@ -252,7 +271,7 @@ train_catboost <- function(x, y, depth = 6, iterations = 1000, learning_rate = N
   )
 
   # train ------------------------
-  d <- catboost::catboost.load_pool(data = x, label = y)
+  d <- prepare_df_catboost(x,y)
 
   # override or add some other args
   others <- list(...)
