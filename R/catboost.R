@@ -194,10 +194,12 @@ add_boost_tree_catboost <- function() {
   )
 }
 
-prepare_df_catboost <- function(x, y = NULL) {
-  categorical_cols <- categorical_columns(x)
-  x <- categorical_features_to_int(x, categorical_cols)
-  x <- as.matrix(x)
+prepare_df_catboost <- function(x, y = NULL, categorical_cols= NULL) {
+  if(is.null(categorical_cols)){
+    # auto detect the categorical columns from data.frame
+    # Not strictly necessary but good form.
+    categorical_cols <- categorical_columns(x)
+  }
 
   # catboost uses 0-indexed feature cols
   if(!is.null(categorical_cols)){categorical_cols <- categorical_cols-1}
@@ -206,7 +208,7 @@ prepare_df_catboost <- function(x, y = NULL) {
     return(x)
 
   catboost::catboost.load_pool(
-    data = as.matrix(x),
+    data = x,
     label = y,
     cat_features = categorical_cols
   )
