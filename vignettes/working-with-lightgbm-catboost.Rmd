@@ -19,8 +19,8 @@ library(tidymodels)
 library(treesnip)
 data("diamonds", package = "ggplot2")
 
-# test/train splits
-diamonds_splits <- initial_split(diamonds)
+# vfold resamples
+diamonds_splits <- vfold_cv(diamonds, v = 5)
 ```
 
 ## Model spec
@@ -31,8 +31,8 @@ Both lightgbm and catboost are engines for `parsnip::boost_tree()`. All main hip
 model_spec <- boost_tree(mtry = 5, trees = 500) %>% set_mode("regression")
 
 # model specs
-lightgbm_model <- model_spec %>% set_engine("lightgbm")
-catboost_model <- model_spec %>% set_engine("catboost")
+lightgbm_model <- model_spec %>% set_engine("lightgbm", nthread = 6)
+catboost_model <- model_spec %>% set_engine("catboost", nthread = 6)
 
 #workflows
 lightgbm_wf <- workflow() %>% add_model(lightgbm_model)
@@ -47,20 +47,23 @@ Differently from xgboost, lightgbm and catboost deals with nominal columns nativ
 
 In fact, avoiding `step_dummy()` seems to be a good idea when using lightgbm or catboost.
 
-```{r}
-rec_ordered <- recipe(price ~ ., data = training(diamonds_splits)) 
+```{r fit_resample, cache = TRUE}
+rec_ordered <- recipe(price ~ ., data = diamonds) 
 rec_dummy <- rec_ordered %>% step_dummy(all_nominal())
 rec_factor <- rec_ordered %>% step_unorder(all_nominal())
 
 # glimpse(juice(prep(rec_factor)))
 
-lightgbm_fit_ordered <- last_fit(add_recipe(lightgbm_wf, rec_ordered), split = diamonds_splits)
-lightgbm_fit_dummy <- last_fit(add_recipe(lightgbm_wf, rec_dummy), split = diamonds_splits)
-lightgbm_fit_factor <- last_fit(add_recipe(lightgbm_wf, rec_factor), split = diamonds_splits)
-catboost_fit_ordered <- last_fit(add_recipe(catboost_wf, rec_ordered), split = diamonds_splits)
-catboost_fit_dummy <- last_fit(add_recipe(catboost_wf, rec_dummy), split = diamonds_splits)
-catboost_fit_factor <- last_fit(add_recipe(catboost_wf, rec_factor), split = diamonds_splits)
+lightgbm_fit_ordered <- fit_resamples(add_recipe(lightgbm_wf, rec_ordered), resamples = diamonds_splits)
+lightgbm_fit_dummy <- fit_resamples(add_recipe(lightgbm_wf, rec_dummy), resamples = diamonds_splits)
+lightgbm_fit_factor <- fit_resamples(add_recipe(lightgbm_wf, rec_factor), resamples = diamonds_splits)
+catboost_fit_ordered <- fit_resamples(add_recipe(catboost_wf, rec_ordered), resamples = diamonds_splits)
+catboost_fit_dummy <- fit_resamples(add_recipe(catboost_wf, rec_dummy), resamples = diamonds_splits)
+catboost_fit_factor <- fit_resamples(add_recipe(catboost_wf, rec_factor), resamples = diamonds_splits)
+```
 
+
+```{r}
 bind_rows(
   collect_metrics(lightgbm_fit_ordered) %>% mutate(model = "lightgbm", encode = "ordered"),
   collect_metrics(lightgbm_fit_dummy) %>% mutate(model = "lightgbm", encode = "dummy"),
@@ -70,8 +73,9 @@ bind_rows(
   collect_metrics(catboost_fit_factor) %>% mutate(model = "catboost", encode = "factor")
 ) %>%
   filter(.metric == "rmse") %>%
-  ggplot(aes(x = encode, y = .estimate, group = model, colour = model)) +
+  ggplot(aes(x = encode, y = mean, group = model, colour = model)) +
   geom_point() +
+  geom_errorbar(aes(ymin = mean - std_err, ymax = mean + std_err), width = 0.2) +
   geom_line() +
   labs(y = "RMSE (the lower the better)") +
   theme_minimal(20)
