@@ -57,3 +57,10 @@ test_that("catboost tree_depth", {
   }
 
 })
+
+test_that("catboost multi_predict", {
+  model <- parsnip::boost_tree(mtry = 5, trees = 5, mode = "regression")
+  model <- parsnip::set_engine(model, "catboost")
+
+  expect_multi_predict_works(model)
+})

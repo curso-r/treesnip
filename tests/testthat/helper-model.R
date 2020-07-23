@@ -101,7 +101,7 @@ expect_can_tune_boost_tree <- function(model) {
 
   expect_equal(nrow(adj), nrow(resamples))
   expect_equal(nrow(tune::collect_metrics(adj)), 3)
-  expect_true(all(!is.nan(collect_metrics(adj)$mean)))
+  expect_true(all(!is.nan(tune::collect_metrics(adj)$mean)))
 
   # classification
   adj <- tune::tune_grid(
@@ -114,7 +114,7 @@ expect_can_tune_boost_tree <- function(model) {
 
   expect_equal(nrow(adj), nrow(resamples))
   expect_equal(nrow(tune::collect_metrics(adj)), 6)
-  expect_true(all(!is.nan(collect_metrics(adj)$mean)))
+  expect_true(all(!is.nan(tune::collect_metrics(adj)$mean)))
 
 
 }
@@ -131,4 +131,16 @@ expect_accuracy <- function(pred, true, at_least) {
 
 expect_not_constant_predictions <- function(pred) {
   expect_true(length(unique(pred)) > 1)
+}
+
+expect_multi_predict_works <- function(model) {
+  adj <- parsnip::fit(model, mpg ~ ., data = mtcars)
+
+  expect_true(parsnip::has_multi_predict(adj))
+  expect_equal(parsnip::multi_predict_args(adj), "trees")
+
+  mp <- parsnip::multi_predict(adj, mtcars, trees = c(1, 3, 5))
+  expect_equal(nrow(mp), nrow(mtcars))
+  expect_equal(nrow(tidyr::unnest(mp, .pred)), 3*nrow(mtcars))
+  expect_error(multi_predict(adj, mtcars, trees = 6))
 }
