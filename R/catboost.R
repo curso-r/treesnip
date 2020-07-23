@@ -150,7 +150,7 @@ add_boost_tree_catboost <- function() {
     parsnip = "trees",
     original = "iterations",
     func = list(pkg = "dials", fun = "trees"),
-    has_submodel = TRUE
+    has_submodel = FALSE
   )
   parsnip::set_model_arg(
     model = "boost_tree",
@@ -375,14 +375,14 @@ catboost_by_tree <- function(tree, object, new_data, type, categorical_cols = NU
 }
 
 #' @export
-predict.catboost.Model <- function(object, new_data, type = "RawFormulaVal",categorical_cols = NULL, ...) {
+predict.catboost.Model <- function(object, new_data, type = "RawFormulaVal", categorical_cols = NULL, ...) {
 
   if (!inherits(new_data, "catboost.Pool")) {
     d <- prepare_df_catboost(new_data, categorical_cols = categorical_cols)
     new_data <- catboost::catboost.load_pool(d)
   }
 
-  type <- switch (
+  prediction_type <- switch (
     type,
     "raw" = "RawFormulaVal",
     "numeric" = "RawFormulaVal",
@@ -391,7 +391,7 @@ predict.catboost.Model <- function(object, new_data, type = "RawFormulaVal",cate
     type
   )
 
-  catboost::catboost.predict(object, new_data, prediction_type = type, ...)
+  catboost::catboost.predict(object, new_data, prediction_type = prediction_type, ...)
 }
 
 
