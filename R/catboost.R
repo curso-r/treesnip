@@ -150,7 +150,7 @@ add_boost_tree_catboost <- function() {
     parsnip = "trees",
     original = "iterations",
     func = list(pkg = "dials", fun = "trees"),
-    has_submodel = FALSE
+    has_submodel = TRUE
   )
   parsnip::set_model_arg(
     model = "boost_tree",
@@ -316,7 +316,7 @@ multi_predict._catboost.Model <- function(object, new_data, type = NULL, trees =
         "prob" = "Probability"
       )
     }
-
+    browser()
     res <- map_df(trees, catboost_by_tree, object = object, new_data = new_data, type = type, ...)
     res <- dplyr::arrange(res, .row, trees)
     res <- split(res[, -1], res$.row)
@@ -327,6 +327,7 @@ multi_predict._catboost.Model <- function(object, new_data, type = NULL, trees =
   }
 
 catboost_by_tree <- function(tree, object, new_data, type, ...) {
+  browser()
 
   pred <- predict.catboost.Model(object$fit, new_data, ntree_end = tree, type = type, ...)
 
@@ -340,7 +341,7 @@ catboost_by_tree <- function(tree, object, new_data, type, ...) {
       pred <- tibble::tibble(.pred_class = factor(pred, levels = object$lvl))
     } else {
       pred <- object$spec$method$pred$prob$post(pred, object)
-      pred <- tibble::as_tibble(pred, .name_repair = make.names)
+      pred <- tibble::as_tibble(pred)
       names(pred) <- paste0(".pred_", names(pred))
     }
     nms <- names(pred)
@@ -363,7 +364,7 @@ predict.catboost.Model <- function(object, new_data, type = "RawFormulaVal", ...
     "numeric" = "RawFormulaVal",
     "class" = "Class",
     "prob" = "Probability",
-    "RawFormulaVal"
+    type
   )
 
   catboost::catboost.predict(object, new_data, prediction_type = type, ...)
