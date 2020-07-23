@@ -1,0 +1,42 @@
+---
+title: "Parallel Processing"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Parallel Processing}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+In summary, all you have to do is set `nthread = x` where `x` is the number of threads to use, usually the number of CPU cores to let the engine use from you own computer. E.g. `set_engine("lightgbm", nthread = 8)`.
+
+Parsnip principles states that *parallel processing must be explictly requested by the user*^[https://tidymodels.github.io/model-implementation-principles/parallel-processing.html], so if `nthread` were not specified, just a single thread will be used.
+
+```{r, eval = FALSE, message=FALSE}
+library(tidymodels)
+library(treesnip)
+big_mtcars <- mtcars %>% sample_n(1000000, replace = TRUE)
+
+# model spec
+model <- boost_tree(tree_depth = tune()) %>%
+  set_mode("regression") %>%
+  set_engine("catboost", nthread = 8)
+  # set_engine("lightgbm", nthread = 8)
+  # set_engine("xgboost", nthread = 8)
+
+# recipe
+rec <- recipe(mpg ~ ., data = big_mtcars)
+
+# workflows
+wf <- workflow() %>% add_recipe(rec) %>% add_model(model)
+tune_grid(wf, vfold_cv(big_mtcars, v = 2))
+```
+
+PS: originally, there is no `nthread` parameter for {catboost} but {treesnip} made `nthread` an alias for `thread_count` for convenience.
+
