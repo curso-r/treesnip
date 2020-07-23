@@ -13,6 +13,7 @@ train_catboost(
   rsm = 1,
   min_data_in_leaf = 1,
   subsample = 1,
+  categorical_cols = NULL,
   ...
 )
 }
@@ -33,6 +34,8 @@ train_catboost(
 in a child to continue to split.}
 
 \item{subsample}{Subsampling proportion of rows.}
+
+\item{categorical_cols}{indices of categorical columns, when NULL (default) factor columns are automatically detected}
 
 \item{...}{Other options to pass to \code{catboost.train}.}
 }
