@@ -84,11 +84,15 @@ expect_categorical_vars_works <- function(model) {
 }
 
 expect_can_tune_boost_tree <- function(model) {
+  mtcars$cyl <- factor(mtcars$cyl)
+  mtcars$vs <- factor(mtcars$vs)
 
   grid_df <- data.frame(trees = c(10, 20))
   resamples <- rsample::vfold_cv(mtcars, v = 2)
+
+  # regression
   adj <- tune::tune_grid(
-    model,
+    parsnip::set_mode(model, "regression"),
     mpg ~ .,
     resamples = resamples,
     grid = 3,
@@ -97,6 +101,21 @@ expect_can_tune_boost_tree <- function(model) {
 
   expect_equal(nrow(adj), nrow(resamples))
   expect_equal(nrow(tune::collect_metrics(adj)), 3)
+  expect_true(all(!is.nan(collect_metrics(adj)$mean)))
+
+  # classification
+  adj <- tune::tune_grid(
+    parsnip::set_mode(model, "classification"),
+    cyl ~ .,
+    resamples = resamples,
+    grid = 3,
+    metrics = yardstick::metric_set(yardstick::accuracy, yardstick::roc_auc)
+  )
+
+  expect_equal(nrow(adj), nrow(resamples))
+  expect_equal(nrow(tune::collect_metrics(adj)), 6)
+  expect_true(all(!is.nan(collect_metrics(adj)$mean)))
+
 
 }
 
