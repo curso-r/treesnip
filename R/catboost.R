@@ -229,12 +229,14 @@ prepare_df_catboost <- function(x, y = NULL, categorical_cols= NULL) {
 #' @param min_data_in_leaf A numeric value for the minimum sum of instances needed
 #'  in a child to continue to split.
 #' @param subsample Subsampling proportion of rows.
+#' @param categorical_cols indices of categorical columns, when NULL (default) factor columns are automatically detected
 #' @param ... Other options to pass to `catboost.train`.
 #' @return A fitted `catboost.Model` object.
 #' @keywords internal
 #' @export
 train_catboost <- function(x, y, depth = 6, iterations = 1000, learning_rate = NULL,
-                           rsm = 1, min_data_in_leaf = 1, subsample = 1, ...) {
+                           rsm = 1, min_data_in_leaf = 1, subsample = 1,
+                           categorical_cols = NULL, ...) {
 
   # rsm ------------------------------
   if(!is.null(rsm)) {
@@ -273,7 +275,7 @@ train_catboost <- function(x, y, depth = 6, iterations = 1000, learning_rate = N
   )
 
   # train ------------------------
-  d <- prepare_df_catboost(x,y)
+  d <- prepare_df_catboost(x, y = y, categorical_cols = categorical_cols)
 
   # override or add some other args
   others <- list(...)
@@ -303,10 +305,11 @@ train_catboost <- function(x, y, depth = 6, iterations = 1000, learning_rate = N
 #' @param new_data A rectangular data object, such as a data frame.
 #' @param type A single character value or NULL. Possible values are "numeric", "class", "prob", "conf_int", "pred_int", "quantile", or "raw". When NULL, predict() will choose an appropriate value based on the model's mode.
 #' @param trees An integer vector for the number of trees in the ensemble.
+#' @param categorical_cols indices of categorical columns, when NULL (default) factor columns are automatically detected.
 #'
 #' @export
 #' @importFrom purrr map_df
-multi_predict._catboost.Model <- function(object, new_data, type = NULL, trees = NULL, ...) {
+multi_predict._catboost.Model <- function(object, new_data, type = NULL, trees = NULL, categorical_cols = NULL, ...) {
     if (any(names(rlang::enquos(...)) == "newdata")) {
       rlang::abort("Did you mean to use `new_data` instead of `newdata`?")
     }
@@ -330,8 +333,8 @@ multi_predict._catboost.Model <- function(object, new_data, type = NULL, trees =
         "prob" = "Probability"
       )
     }
-
-    res <- map_df(trees, catboost_by_tree, object = object, new_data = new_data, type = type, ...)
+    d <- prepare_df_catboost(new_data,y, categorical_cols = categorical_cols)
+    res <- map_df(trees, catboost_by_tree, object = object, new_data = d, type = type, ...)
     res <- dplyr::arrange(res, .row, trees)
     res <- split(res[, -1], res$.row)
     names(res) <- NULL
@@ -340,9 +343,9 @@ multi_predict._catboost.Model <- function(object, new_data, type = NULL, trees =
 
   }
 
-catboost_by_tree <- function(tree, object, new_data, type, ...) {
-
-  pred <- predict.catboost.Model(object$fit, new_data, ntree_end = tree, type = type, ...)
+catboost_by_tree <- function(tree, object, new_data, type, categorical_cols = NULL,...) {
+  d <- prepare_df_catboost(new_data, categorical_cols = categorical_cols)
+  pred <- predict.catboost.Model(object$fit, d, ntree_end = tree, type = type, categorical_columns=categorical_columns,...)
 
   # switch based on prediction type
   if (object$spec$mode == "regression") {
@@ -365,10 +368,11 @@ catboost_by_tree <- function(tree, object, new_data, type, ...) {
 }
 
 #' @export
-predict.catboost.Model <- function(object, new_data, type = "RawFormulaVal", ...) {
+predict.catboost.Model <- function(object, new_data, type = "RawFormulaVal",categorical_cols = NULL, ...) {
 
   if (!inherits(new_data, "catboost.Pool")) {
-    new_data <- catboost::catboost.load_pool(new_data)
+    d <- prepare_df_catboost(new_data, categorical_cols = categorical_cols)
+    new_data <- catboost::catboost.load_pool(d)
   }
 
   type <- switch (
