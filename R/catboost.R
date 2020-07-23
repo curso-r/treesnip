@@ -261,7 +261,14 @@ train_catboost <- function(x, y, depth = 6, iterations = 1000, learning_rate = N
   if(is.null(others$logging_level)) others$logging_level = "Silent"
   if(is.null(others$bootstrap_type)) others$bootstrap_type = "Bernoulli" # subsample as is
   if(is.null(others$sampling_frequency)) others$sampling_frequency = "PerTree" # subsample as is
-  if(is.null(others$thread_count)) others$thread_count = 1L # parallelism should be explicitly specified by the user
+
+  # artificial alias for thread_count (for match xgboost and lightgbm)
+  if(is.null(others$thread_count) & is.null(others$nthread)) {
+    others$thread_count = 1L # parallelism should be explicitly specified by the user
+  } else {
+    others$thread_count = ifelse(!is.null(others$thread_count), others$thread_count, others$nthread)
+    others$nthread <- NULL
+  }
 
   arg_list <- purrr::compact(c(arg_list, others))
   main_args <- list(
