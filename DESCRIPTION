@@ -3,6 +3,7 @@ Title: Tree Based Model Engines for 'Parsnip'
 Version: 0.1.0
 Authors@R: c(
     person("Daniel", "Falbel", role = c("aut", "cre"), email = "dfalbel@curso-r.com"),
+    person("Athos", "Damiani", role = c("aut"), email = "adamiani@curso-r.com"),
     person("Roel M.", "Hogervorst", email = "hogervorst.rm@gmail.com", role = "aut",
                           comment = c(ORCID = "0000-0001-7509-0328"))
     )
