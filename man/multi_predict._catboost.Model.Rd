@@ -4,7 +4,14 @@
 \alias{multi_predict._catboost.Model}
 \title{Model predictions across many sub-models}
 \usage{
-multi_predict._catboost.Model(object, new_data, type = NULL, trees = NULL, ...)
+multi_predict._catboost.Model(
+  object,
+  new_data,
+  type = NULL,
+  trees = NULL,
+  categorical_cols = NULL,
+  ...
+)
 }
 \arguments{
 \item{object}{A model_fit object.}
@@ -14,6 +21,8 @@ multi_predict._catboost.Model(object, new_data, type = NULL, trees = NULL, ...)
 \item{type}{A single character value or NULL. Possible values are "numeric", "class", "prob", "conf_int", "pred_int", "quantile", or "raw". When NULL, predict() will choose an appropriate value based on the model's mode.}
 
 \item{trees}{An integer vector for the number of trees in the ensemble.}
+
+\item{categorical_cols}{indices of categorical columns, when NULL (default) factor columns are automatically detected.}
 
 \item{...}{Optional arguments to pass to predict.model_fit(type = "raw") such as type.}
 }

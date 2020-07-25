@@ -157,14 +157,9 @@ add_boost_tree_lightgbm <- function() {
   )
 }
 
-prepare_df <- function(x, y = NULL) {
-  categorical_cols <- NULL
-  for (i in seq_along(x)) {
-    if (is.factor(x[[i]])) {
-      x[[i]] <- as.integer(x[[i]]) - 1L
-      categorical_cols <- c(categorical_cols, i)
-    }
-  }
+prepare_df_lgbm <- function(x, y = NULL) {
+  categorical_cols <- categorical_columns(x)
+  x <- categorical_features_to_int(x, categorical_cols)
   x <- as.matrix(x)
 
   if (is.null(y))
@@ -250,6 +245,9 @@ train_lightgbm <- function(x, y, max_depth = 6, num_iterations = 100, learning_r
   others <- list(...)
   others <- others[!(names(others) %in% c("data", names(arg_list)))]
 
+  # parallelism should be explicitly specified by the user
+  if(all(sapply(others[c("num_threads", "num_thread", "nthread", "nthreads", "n_jobs")], is.null))) others$num_threads <- 1L
+
   if(is.null(others$num_leaves)) {
     others$num_leaves = max(2^min(max_depth, 17) - 1, 2)
     if(max_depth > 17)
@@ -260,7 +258,7 @@ train_lightgbm <- function(x, y, max_depth = 6, num_iterations = 100, learning_r
 
 
   # train ------------------------
-  d <- prepare_df(x, y)
+  d <- prepare_df_lgbm(x, y)
 
   main_args <- list(
     data = quote(d),
@@ -281,7 +279,7 @@ train_lightgbm <- function(x, y, max_depth = 6, num_iterations = 100, learning_r
 #'
 #' @export
 predict_lightgbm_classification_prob <- function(object, new_data) {
-  p <- stats::predict(object$fit, prepare_df(new_data), reshape = TRUE)
+  p <- stats::predict(object$fit, prepare_df_lgbm(new_data), reshape = TRUE)
   if(is.vector(p)) {
     p <- tibble::tibble(p1 = 1 - p, p2 = p)
   }
@@ -299,7 +297,7 @@ predict_lightgbm_classification_prob <- function(object, new_data) {
 #'
 #' @export
 predict_lightgbm_classification_class <- function(object, new_data) {
-  p <- predict_lightgbm_classification_prob(object, prepare_df(new_data))
+  p <- predict_lightgbm_classification_prob(object, prepare_df_lgbm(new_data))
   q <- apply(p, 1, function(x) which.max(x))
   names(p)[q]
 }
@@ -315,7 +313,7 @@ predict_lightgbm_classification_class <- function(object, new_data) {
 #'
 #' @export
 predict_lightgbm_regression_numeric <- function(object, new_data) {
-  p <- stats::predict(object$fit, prepare_df(new_data), reshape = TRUE)
+  p <- stats::predict(object$fit, prepare_df_lgbm(new_data), reshape = TRUE)
   p
 }
 
