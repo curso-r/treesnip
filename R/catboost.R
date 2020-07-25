@@ -378,7 +378,7 @@ catboost_by_tree <- function(tree, object, new_data, type, categorical_cols = NU
 predict.catboost.Model <- function(object, new_data, type = "RawFormulaVal", categorical_cols = NULL, ...) {
   if (!inherits(new_data, "catboost.Pool")) {
     d <- prepare_df_catboost(new_data, categorical_cols = categorical_cols)
-    new_data <- catboost::catboost.load_pool(d)
+    new_data <- catboost::catboost.load_pool(d, cat_features = categorical_cols)
   }
 
   prediction_type <- switch (
