@@ -58,3 +58,13 @@ test_that("lightgbm tree_depth", {
   }
 
 })
+
+
+
+test_that("lightgbm multi_predict", {
+  model <- parsnip::boost_tree(mtry = 5, trees = 5, mode = "regression")
+  model <- parsnip::set_engine(model, "lightgbm")
+
+  expect_multi_predict_works(model)
+})
+
