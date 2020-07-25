@@ -25,7 +25,7 @@ diamonds_splits <- initial_split(diamonds)
 
 ## Model spec
 
-Both lightgbm and catboost are engines for `parsnip::boost_tree()`. All main hiperparameters are available, except `loss_reduction` for catboost.
+Both lightgbm and catboost are engines for `parsnip::boost_tree()`. All main hyperparameters are available, except `loss_reduction` for catboost.
 
 ```{r}
 model_spec <- boost_tree(mtry = 5, trees = 500) %>% set_mode("regression")
