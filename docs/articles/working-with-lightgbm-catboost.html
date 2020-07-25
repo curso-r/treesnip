@@ -54,6 +54,9 @@
   </a>
   <ul class="dropdown-menu" role="menu">
 <li>
+      <a href="../articles/parallel-processing.html">Parallel Processing</a>
+    </li>
+    <li>
       <a href="../articles/working-with-lightgbm-catboost.html">Working with lightgbm and catboost</a>
     </li>
   </ul>
@@ -76,7 +79,7 @@
 
       
 
-      </header><script src="working-with-lightgbm-catboost_files/header-attrs-2.3/header-attrs.js"></script><script src="working-with-lightgbm-catboost_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
+      </header><script src="working-with-lightgbm-catboost_files/accessible-code-block-0.0.1/empty-anchor.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Working with lightgbm and catboost</h1>
@@ -90,33 +93,20 @@
     
     
 <div class="sourceCode" id="cb1"><html><body><pre class="r"><span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">tidymodels</span>)
-<span class="co">#&gt; ── Attaching packages ─────────────────────────────────────────────── tidymodels 0.1.0 ──</span>
-<span class="co">#&gt; ✓ broom     0.5.6      ✓ recipes   0.1.13</span>
-<span class="co">#&gt; ✓ dials     0.0.7      ✓ rsample   0.0.7 </span>
-<span class="co">#&gt; ✓ dplyr     1.0.0      ✓ tibble    3.0.2 </span>
-<span class="co">#&gt; ✓ ggplot2   3.3.2      ✓ tune      0.1.0 </span>
-<span class="co">#&gt; ✓ infer     0.5.2      ✓ workflows 0.1.1 </span>
-<span class="co">#&gt; ✓ parsnip   0.1.2      ✓ yardstick 0.0.6 </span>
-<span class="co">#&gt; ✓ purrr     0.3.4</span>
-<span class="co">#&gt; ── Conflicts ────────────────────────────────────────────────── tidymodels_conflicts() ──</span>
-<span class="co">#&gt; x purrr::discard() masks scales::discard()</span>
-<span class="co">#&gt; x dplyr::filter()  masks stats::filter()</span>
-<span class="co">#&gt; x dplyr::lag()     masks stats::lag()</span>
-<span class="co">#&gt; x recipes::step()  masks stats::step()</span>
 <span class="fu"><a href="https://rdrr.io/r/base/library.html">library</a></span>(<span class="no">treesnip</span>)
 <span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(<span class="st">"diamonds"</span>, <span class="kw">package</span> <span class="kw">=</span> <span class="st">"ggplot2"</span>)
 
-<span class="co"># test/train splits</span>
-<span class="no">diamonds_splits</span> <span class="kw">&lt;-</span> <span class="fu">initial_split</span>(<span class="no">diamonds</span>)</pre></body></html></div>
+<span class="co"># vfold resamples</span>
+<span class="no">diamonds_splits</span> <span class="kw">&lt;-</span> <span class="fu">vfold_cv</span>(<span class="no">diamonds</span>, <span class="kw">v</span> <span class="kw">=</span> <span class="fl">5</span>)</pre></body></html></div>
 <div id="model-spec" class="section level2">
 <h2 class="hasAnchor">
 <a href="#model-spec" class="anchor"></a>Model spec</h2>
-<p>Both lightgbm and catboost are engines for <code><a href="https://parsnip.tidymodels.org/reference/boost_tree.html">parsnip::boost_tree()</a></code>. All main hiperparameters are available, except <code>loss_reduction</code> for catboost.</p>
+<p>Both lightgbm and catboost are engines for <code><a href="https://parsnip.tidymodels.org/reference/boost_tree.html">parsnip::boost_tree()</a></code>. All main hyperparameters are available, except <code>loss_reduction</code> for catboost.</p>
 <div class="sourceCode" id="cb2"><html><body><pre class="r"><span class="no">model_spec</span> <span class="kw">&lt;-</span> <span class="fu">boost_tree</span>(<span class="kw">mtry</span> <span class="kw">=</span> <span class="fl">5</span>, <span class="kw">trees</span> <span class="kw">=</span> <span class="fl">500</span>) <span class="kw">%&gt;%</span> <span class="fu">set_mode</span>(<span class="st">"regression"</span>)
 
 <span class="co"># model specs</span>
-<span class="no">lightgbm_model</span> <span class="kw">&lt;-</span> <span class="no">model_spec</span> <span class="kw">%&gt;%</span> <span class="fu">set_engine</span>(<span class="st">"lightgbm"</span>)
-<span class="no">catboost_model</span> <span class="kw">&lt;-</span> <span class="no">model_spec</span> <span class="kw">%&gt;%</span> <span class="fu">set_engine</span>(<span class="st">"catboost"</span>)
+<span class="no">lightgbm_model</span> <span class="kw">&lt;-</span> <span class="no">model_spec</span> <span class="kw">%&gt;%</span> <span class="fu">set_engine</span>(<span class="st">"lightgbm"</span>, <span class="kw">nthread</span> <span class="kw">=</span> <span class="fl">6</span>)
+<span class="no">catboost_model</span> <span class="kw">&lt;-</span> <span class="no">model_spec</span> <span class="kw">%&gt;%</span> <span class="fu">set_engine</span>(<span class="st">"catboost"</span>, <span class="kw">nthread</span> <span class="kw">=</span> <span class="fl">6</span>)
 
 <span class="co">#workflows</span>
 <span class="no">lightgbm_wf</span> <span class="kw">&lt;-</span> <span class="fu">workflow</span>() <span class="kw">%&gt;%</span> <span class="fu">add_model</span>(<span class="no">lightgbm_model</span>)
@@ -130,20 +120,19 @@
 <h3 class="hasAnchor">
 <a href="#encodings-benchmark" class="anchor"></a>Encodings benchmark</h3>
 <p>In fact, avoiding <code>step_dummy()</code> seems to be a good idea when using lightgbm or catboost.</p>
-<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">rec_ordered</span> <span class="kw">&lt;-</span> <span class="fu">recipe</span>(<span class="no">price</span> ~ <span class="no">.</span>, <span class="kw">data</span> <span class="kw">=</span> <span class="fu">training</span>(<span class="no">diamonds_splits</span>))
+<div class="sourceCode" id="cb3"><html><body><pre class="r"><span class="no">rec_ordered</span> <span class="kw">&lt;-</span> <span class="fu">recipe</span>(<span class="no">price</span> ~ <span class="no">.</span>, <span class="kw">data</span> <span class="kw">=</span> <span class="no">diamonds</span>)
 <span class="no">rec_dummy</span> <span class="kw">&lt;-</span> <span class="no">rec_ordered</span> <span class="kw">%&gt;%</span> <span class="fu">step_dummy</span>(<span class="fu">all_nominal</span>())
 <span class="no">rec_factor</span> <span class="kw">&lt;-</span> <span class="no">rec_ordered</span> <span class="kw">%&gt;%</span> <span class="fu">step_unorder</span>(<span class="fu">all_nominal</span>())
 
 <span class="co"># glimpse(juice(prep(rec_factor)))</span>
 
-<span class="no">lightgbm_fit_ordered</span> <span class="kw">&lt;-</span> <span class="fu">last_fit</span>(<span class="fu">add_recipe</span>(<span class="no">lightgbm_wf</span>, <span class="no">rec_ordered</span>), <span class="kw">split</span> <span class="kw">=</span> <span class="no">diamonds_splits</span>)
-<span class="no">lightgbm_fit_dummy</span> <span class="kw">&lt;-</span> <span class="fu">last_fit</span>(<span class="fu">add_recipe</span>(<span class="no">lightgbm_wf</span>, <span class="no">rec_dummy</span>), <span class="kw">split</span> <span class="kw">=</span> <span class="no">diamonds_splits</span>)
-<span class="no">lightgbm_fit_factor</span> <span class="kw">&lt;-</span> <span class="fu">last_fit</span>(<span class="fu">add_recipe</span>(<span class="no">lightgbm_wf</span>, <span class="no">rec_factor</span>), <span class="kw">split</span> <span class="kw">=</span> <span class="no">diamonds_splits</span>)
-<span class="no">catboost_fit_ordered</span> <span class="kw">&lt;-</span> <span class="fu">last_fit</span>(<span class="fu">add_recipe</span>(<span class="no">catboost_wf</span>, <span class="no">rec_ordered</span>), <span class="kw">split</span> <span class="kw">=</span> <span class="no">diamonds_splits</span>)
-<span class="no">catboost_fit_dummy</span> <span class="kw">&lt;-</span> <span class="fu">last_fit</span>(<span class="fu">add_recipe</span>(<span class="no">catboost_wf</span>, <span class="no">rec_dummy</span>), <span class="kw">split</span> <span class="kw">=</span> <span class="no">diamonds_splits</span>)
-<span class="no">catboost_fit_factor</span> <span class="kw">&lt;-</span> <span class="fu">last_fit</span>(<span class="fu">add_recipe</span>(<span class="no">catboost_wf</span>, <span class="no">rec_factor</span>), <span class="kw">split</span> <span class="kw">=</span> <span class="no">diamonds_splits</span>)
-
-<span class="fu">bind_rows</span>(
+<span class="no">lightgbm_fit_ordered</span> <span class="kw">&lt;-</span> <span class="fu">fit_resamples</span>(<span class="fu">add_recipe</span>(<span class="no">lightgbm_wf</span>, <span class="no">rec_ordered</span>), <span class="kw">resamples</span> <span class="kw">=</span> <span class="no">diamonds_splits</span>)
+<span class="no">lightgbm_fit_dummy</span> <span class="kw">&lt;-</span> <span class="fu">fit_resamples</span>(<span class="fu">add_recipe</span>(<span class="no">lightgbm_wf</span>, <span class="no">rec_dummy</span>), <span class="kw">resamples</span> <span class="kw">=</span> <span class="no">diamonds_splits</span>)
+<span class="no">lightgbm_fit_factor</span> <span class="kw">&lt;-</span> <span class="fu">fit_resamples</span>(<span class="fu">add_recipe</span>(<span class="no">lightgbm_wf</span>, <span class="no">rec_factor</span>), <span class="kw">resamples</span> <span class="kw">=</span> <span class="no">diamonds_splits</span>)
+<span class="no">catboost_fit_ordered</span> <span class="kw">&lt;-</span> <span class="fu">fit_resamples</span>(<span class="fu">add_recipe</span>(<span class="no">catboost_wf</span>, <span class="no">rec_ordered</span>), <span class="kw">resamples</span> <span class="kw">=</span> <span class="no">diamonds_splits</span>)
+<span class="no">catboost_fit_dummy</span> <span class="kw">&lt;-</span> <span class="fu">fit_resamples</span>(<span class="fu">add_recipe</span>(<span class="no">catboost_wf</span>, <span class="no">rec_dummy</span>), <span class="kw">resamples</span> <span class="kw">=</span> <span class="no">diamonds_splits</span>)
+<span class="no">catboost_fit_factor</span> <span class="kw">&lt;-</span> <span class="fu">fit_resamples</span>(<span class="fu">add_recipe</span>(<span class="no">catboost_wf</span>, <span class="no">rec_factor</span>), <span class="kw">resamples</span> <span class="kw">=</span> <span class="no">diamonds_splits</span>)</pre></body></html></div>
+<div class="sourceCode" id="cb4"><html><body><pre class="r"><span class="fu">bind_rows</span>(
   <span class="fu">collect_metrics</span>(<span class="no">lightgbm_fit_ordered</span>) <span class="kw">%&gt;%</span> <span class="fu">mutate</span>(<span class="kw">model</span> <span class="kw">=</span> <span class="st">"lightgbm"</span>, <span class="kw">encode</span> <span class="kw">=</span> <span class="st">"ordered"</span>),
   <span class="fu">collect_metrics</span>(<span class="no">lightgbm_fit_dummy</span>) <span class="kw">%&gt;%</span> <span class="fu">mutate</span>(<span class="kw">model</span> <span class="kw">=</span> <span class="st">"lightgbm"</span>, <span class="kw">encode</span> <span class="kw">=</span> <span class="st">"dummy"</span>),
   <span class="fu">collect_metrics</span>(<span class="no">lightgbm_fit_factor</span>) <span class="kw">%&gt;%</span> <span class="fu">mutate</span>(<span class="kw">model</span> <span class="kw">=</span> <span class="st">"lightgbm"</span>, <span class="kw">encode</span> <span class="kw">=</span> <span class="st">"factor"</span>),
@@ -152,8 +141,9 @@
   <span class="fu">collect_metrics</span>(<span class="no">catboost_fit_factor</span>) <span class="kw">%&gt;%</span> <span class="fu">mutate</span>(<span class="kw">model</span> <span class="kw">=</span> <span class="st">"catboost"</span>, <span class="kw">encode</span> <span class="kw">=</span> <span class="st">"factor"</span>)
 ) <span class="kw">%&gt;%</span>
   <span class="fu"><a href="https://rdrr.io/r/stats/filter.html">filter</a></span>(<span class="no">.metric</span> <span class="kw">==</span> <span class="st">"rmse"</span>) <span class="kw">%&gt;%</span>
-  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="kw">x</span> <span class="kw">=</span> <span class="no">encode</span>, <span class="kw">y</span> <span class="kw">=</span> <span class="no">.estimate</span>, <span class="kw">group</span> <span class="kw">=</span> <span class="no">model</span>, <span class="kw">colour</span> <span class="kw">=</span> <span class="no">model</span>)) +
+  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="kw">x</span> <span class="kw">=</span> <span class="no">encode</span>, <span class="kw">y</span> <span class="kw">=</span> <span class="no">mean</span>, <span class="kw">group</span> <span class="kw">=</span> <span class="no">model</span>, <span class="kw">colour</span> <span class="kw">=</span> <span class="no">model</span>)) +
   <span class="fu">geom_point</span>() +
+  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="kw">ymin</span> <span class="kw">=</span> <span class="no">mean</span> - <span class="no">std_err</span>, <span class="kw">ymax</span> <span class="kw">=</span> <span class="no">mean</span> + <span class="no">std_err</span>), <span class="kw">width</span> <span class="kw">=</span> <span class="fl">0.2</span>) +
   <span class="fu">geom_line</span>() +
   <span class="fu">labs</span>(<span class="kw">y</span> <span class="kw">=</span> <span class="st">"RMSE (the lower the better)"</span>) +
   <span class="fu">theme_minimal</span>(<span class="fl">20</span>)</pre></body></html></div>
@@ -173,7 +163,7 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Daniel Falbel.</p>
+  <p>Developed by Daniel Falbel, Athos Damiani, Roel M. Hogervorst.</p>
 </div>
 
 <div class="pkgdown">

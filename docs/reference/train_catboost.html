@@ -96,6 +96,9 @@ where all of the model arguments are in the main function." />
   </a>
   <ul class="dropdown-menu" role="menu">
     <li>
+      <a href="../articles/parallel-processing.html">Parallel Processing</a>
+    </li>
+    <li>
       <a href="../articles/working-with-lightgbm-catboost.html">Working with lightgbm and catboost</a>
     </li>
   </ul>
@@ -140,6 +143,7 @@ where all of the model arguments are in the main function.</p>
   <span class='kw'>rsm</span> <span class='kw'>=</span> <span class='fl'>1</span>,
   <span class='kw'>min_data_in_leaf</span> <span class='kw'>=</span> <span class='fl'>1</span>,
   <span class='kw'>subsample</span> <span class='kw'>=</span> <span class='fl'>1</span>,
+  <span class='kw'>categorical_cols</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='no'>...</span>
 )</pre>
 
@@ -180,6 +184,10 @@ in a child to continue to split.</p></td>
       <td><p>Subsampling proportion of rows.</p></td>
     </tr>
     <tr>
+      <th>categorical_cols</th>
+      <td><p>indices of categorical columns, when NULL (default) factor columns are automatically detected</p></td>
+    </tr>
+    <tr>
       <th>...</th>
       <td><p>Other options to pass to <code>catboost.train</code>.</p></td>
     </tr>
@@ -200,7 +208,7 @@ in a child to continue to split.</p></td>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Daniel Falbel.</p>
+  <p>Developed by Daniel Falbel, Athos Damiani, Roel M. Hogervorst.</p>
 </div>
 
 <div class="pkgdown">
