@@ -4,7 +4,7 @@
 \alias{multi_predict._catboost.Model}
 \title{Model predictions across many sub-models}
 \usage{
-multi_predict._catboost.Model(
+\method{multi_predict}{`_catboost.Model`}(
   object,
   new_data,
   type = NULL,
