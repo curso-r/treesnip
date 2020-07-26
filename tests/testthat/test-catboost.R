@@ -51,7 +51,6 @@ test_that("catboost tree_depth", {
 
   hiperparameters <- data.frame(tree_depth = c(1, 16))
   for(i in 1:nrow(hiperparameters)) {
-    cat(hiperparameters$tree_depth[i], "\n")
     model <- parsnip::boost_tree(tree_depth = hiperparameters$tree_depth[i])
     expect_all_modes_works(model, 'catboost')
   }
