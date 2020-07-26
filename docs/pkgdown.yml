@@ -1,0 +1,8 @@
+pandoc: 2.7.3
+pkgdown: 1.5.1
+pkgdown_sha: ~
+articles:
+  parallel-processing: parallel-processing.html
+  working-with-lightgbm-catboost: working-with-lightgbm-catboost.html
+last_built: 2020-07-25T16:29Z
+

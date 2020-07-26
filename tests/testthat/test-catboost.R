@@ -18,9 +18,9 @@ test_that("catboost with tune", {
 
 test_that("catboost mtry", {
 
-  hiperparameters <- data.frame(mtry = c(1, 2, 6))
-  for(i in 1:nrow(hiperparameters)) {
-    model <- parsnip::boost_tree(mtry = hiperparameters$mtry[i])
+  hyperparameters <- data.frame(mtry = c(1, 2, 6))
+  for(i in 1:nrow(hyperparameters)) {
+    model <- parsnip::boost_tree(mtry = hyperparameters$mtry[i])
     expect_all_modes_works(model, 'catboost')
   }
 
@@ -28,9 +28,9 @@ test_that("catboost mtry", {
 
 test_that("catboost trees", {
 
-  hiperparameters <- data.frame(trees = c(1, 20, 300))
-  for(i in 1:nrow(hiperparameters)) {
-    model <- parsnip::boost_tree(trees = hiperparameters$trees[i])
+  hyperparameters <- data.frame(trees = c(1, 20, 300))
+  for(i in 1:nrow(hyperparameters)) {
+    model <- parsnip::boost_tree(trees = hyperparameters$trees[i])
     expect_all_modes_works(model, 'catboost')
   }
 
@@ -39,9 +39,9 @@ test_that("catboost trees", {
 
 test_that("catboost min_n hiperparameter", {
 
-  hiperparameters <- data.frame(min_n = c(1, 10))
-  for(i in 1:nrow(hiperparameters)) {
-    model <- parsnip::boost_tree(min_n = hiperparameters$min_n[i])
+  hyperparameters <- data.frame(min_n = c(1, 10))
+  for(i in 1:nrow(hyperparameters)) {
+    model <- parsnip::boost_tree(min_n = hyperparameters$min_n[i])
     expect_all_modes_works(model, 'catboost')
   }
 
@@ -49,10 +49,10 @@ test_that("catboost min_n hiperparameter", {
 
 test_that("catboost tree_depth", {
 
-  hiperparameters <- data.frame(tree_depth = c(1, 16))
-  for(i in 1:nrow(hiperparameters)) {
-    cat(hiperparameters$tree_depth[i], "\n")
-    model <- parsnip::boost_tree(tree_depth = hiperparameters$tree_depth[i])
+  hyperparameters <- data.frame(tree_depth = c(1, 16))
+  for(i in 1:nrow(hyperparameters)) {
+    cat(hyperparameters$tree_depth[i], "\n")
+    model <- parsnip::boost_tree(tree_depth = hyperparameters$tree_depth[i])
     expect_all_modes_works(model, 'catboost')
   }
 
