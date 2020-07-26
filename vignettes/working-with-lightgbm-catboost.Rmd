@@ -10,7 +10,9 @@ vignette: >
 ```{r, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
-  comment = "#>"
+  comment = "#>",
+  warning = FALSE,
+  message = FALSE
 )
 ```
 
@@ -25,7 +27,7 @@ diamonds_splits <- vfold_cv(diamonds, v = 5)
 
 ## Model spec
 
-Both lightgbm and catboost are engines for `parsnip::boost_tree()`. All main hiperparameters are available, except `loss_reduction` for catboost.
+Both lightgbm and catboost are engines for `parsnip::boost_tree()`. All main hyperparameters are available, except `loss_reduction` for catboost.
 
 ```{r}
 model_spec <- boost_tree(mtry = 5, trees = 500) %>% set_mode("regression")

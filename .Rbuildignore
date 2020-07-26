@@ -6,3 +6,6 @@
 ^doc$
 ^Meta$
 ^catboost_info
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
