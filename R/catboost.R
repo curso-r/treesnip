@@ -150,7 +150,7 @@ add_boost_tree_catboost <- function() {
     parsnip = "trees",
     original = "iterations",
     func = list(pkg = "dials", fun = "trees"),
-    has_submodel = FALSE
+    has_submodel = TRUE
   )
   parsnip::set_model_arg(
     model = "boost_tree",
@@ -316,6 +316,7 @@ train_catboost <- function(x, y, depth = 6, iterations = 1000, learning_rate = N
 #'
 #' @export
 #' @importFrom purrr map_df
+#' @importFrom parsnip multi_predict
 multi_predict._catboost.Model <- function(object, new_data, type = NULL, trees = NULL, categorical_cols = NULL, ...) {
     if (any(names(rlang::enquos(...)) == "newdata")) {
       rlang::abort("Did you mean to use `new_data` instead of `newdata`?")
@@ -337,11 +338,12 @@ multi_predict._catboost.Model <- function(object, new_data, type = NULL, trees =
         "raw" = "RawFormulaVal",
         "numeric" = "RawFormulaVal",
         "class" = "Class",
-        "prob" = "Probability"
+        "prob" = "Probability",
+        type
       )
     }
-    d <- prepare_df_catboost(new_data,y, categorical_cols = categorical_cols)
-    res <- map_df(trees, catboost_by_tree, object = object, new_data = d, type = type, ...)
+
+    res <- map_df(trees, catboost_by_tree, object = object, new_data = new_data, type = type, categorical_cols = categorical_cols, ...)
     res <- dplyr::arrange(res, .row, trees)
     res <- split(res[, -1], res$.row)
     names(res) <- NULL
@@ -352,14 +354,13 @@ multi_predict._catboost.Model <- function(object, new_data, type = NULL, trees =
 
 catboost_by_tree <- function(tree, object, new_data, type, categorical_cols = NULL,...) {
   d <- prepare_df_catboost(new_data, categorical_cols = categorical_cols)
-  pred <- predict.catboost.Model(object$fit, d, ntree_end = tree, type = type, categorical_columns=categorical_columns,...)
-
+  pred <- predict.catboost.Model(object$fit, d, ntree_end = tree, type = type, categorical_cols = categorical_cols, ...)
   # switch based on prediction type
   if (object$spec$mode == "regression") {
     pred <- tibble::tibble(.pred = pred)
     nms <- names(pred)
   } else {
-    if (type == "class") {
+    if (type == "Class") {
       pred <- object$spec$method$pred$class$post(pred, object)
       pred <- tibble::tibble(.pred_class = factor(pred, levels = object$lvl))
     } else {
@@ -376,10 +377,9 @@ catboost_by_tree <- function(tree, object, new_data, type, categorical_cols = NU
 
 #' @export
 predict.catboost.Model <- function(object, new_data, type = "RawFormulaVal", categorical_cols = NULL, ...) {
-
   if (!inherits(new_data, "catboost.Pool")) {
     d <- prepare_df_catboost(new_data, categorical_cols = categorical_cols)
-    new_data <- catboost::catboost.load_pool(d)
+    new_data <- catboost::catboost.load_pool(d, cat_features = categorical_cols)
   }
 
   prediction_type <- switch (
