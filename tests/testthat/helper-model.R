@@ -142,7 +142,7 @@ expect_multi_predict_works <- function(model) {
   mp <- parsnip::multi_predict(adj, mtcars, trees = c(1, 3, 5))
   expect_equal(nrow(mp), nrow(mtcars))
   expect_equal(nrow(tidyr::unnest(mp, .pred)), 3*nrow(mtcars))
-
+  
   # expect that predictions from different trees would result in different predictions
   expect_true(sum(purrr::map_dbl(mp$.pred, ~var(.x$.pred))) > 0)
 }

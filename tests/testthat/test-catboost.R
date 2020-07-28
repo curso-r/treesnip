@@ -51,9 +51,15 @@ test_that("catboost tree_depth", {
 
   hyperparameters <- data.frame(tree_depth = c(1, 16))
   for(i in 1:nrow(hyperparameters)) {
-    cat(hyperparameters$tree_depth[i], "\n")
     model <- parsnip::boost_tree(tree_depth = hyperparameters$tree_depth[i])
     expect_all_modes_works(model, 'catboost')
   }
 
+})
+
+test_that("catboost multi_predict", {
+  model <- parsnip::boost_tree(mtry = 5, trees = 5, mode = "regression")
+  model <- parsnip::set_engine(model, "catboost")
+
+  expect_multi_predict_works(model)
 })

@@ -316,6 +316,7 @@ train_catboost <- function(x, y, depth = 6, iterations = 1000, learning_rate = N
 #'
 #' @export
 #' @importFrom purrr map_df
+#' @importFrom parsnip multi_predict
 multi_predict._catboost.Model <- function(object, new_data, type = NULL, trees = NULL, categorical_cols = NULL, ...) {
     if (any(names(rlang::enquos(...)) == "newdata")) {
       rlang::abort("Did you mean to use `new_data` instead of `newdata`?")
@@ -378,7 +379,7 @@ catboost_by_tree <- function(tree, object, new_data, type, categorical_cols = NU
 predict.catboost.Model <- function(object, new_data, type = "RawFormulaVal", categorical_cols = NULL, ...) {
   if (!inherits(new_data, "catboost.Pool")) {
     d <- prepare_df_catboost(new_data, categorical_cols = categorical_cols)
-    new_data <- catboost::catboost.load_pool(d)
+    new_data <- catboost::catboost.load_pool(d, cat_features = categorical_cols)
   }
 
   prediction_type <- switch (
