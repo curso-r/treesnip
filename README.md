@@ -500,13 +500,13 @@ multi\_predict
 
 <td style="text-align:left;">
 
-:red\_circle:
+:heavy\_check\_mark:
 
 </td>
 
 <td style="text-align:left;">
 
-:red\_circle:
+:heavy\_check\_mark:
 
 </td>
 
