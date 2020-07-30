@@ -38,7 +38,7 @@ test_that("lightgbm trees", {
 })
 
 
-test_that("lightgbm min_n hiperparameter", {
+test_that("lightgbm min_n hyperparameter", {
 
   hyperparameters <- data.frame(min_n = c(1, 10))
   for(i in 1:nrow(hyperparameters)) {
@@ -49,13 +49,19 @@ test_that("lightgbm min_n hiperparameter", {
 })
 
 test_that("lightgbm tree_depth", {
-
-  hyperparameters <- data.frame(tree_depth = c(1, 17, 50))
-  suppressWarnings(
-    for(i in 1:nrow(hyperparameters)) {
-    cat(hyperparameters$tree_depth[i], "\n")
+  hyperparameters <- data.frame(tree_depth = c(1, 16))
+  for(i in 1:nrow(hyperparameters)) {
     model <- parsnip::boost_tree(tree_depth = hyperparameters$tree_depth[i])
     expect_all_modes_works(model, 'lightgbm')
   }
-)
 })
+
+
+
+test_that("lightgbm multi_predict", {
+  model <- parsnip::boost_tree(mtry = 5, trees = 5, mode = "regression")
+  model <- parsnip::set_engine(model, "lightgbm")
+
+  expect_multi_predict_works(model)
+})
+
