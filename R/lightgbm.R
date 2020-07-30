@@ -352,15 +352,15 @@ lightgbm_by_tree <- function(tree, object, new_data, type = NULL) {
 
   # switch based on prediction type
   if (object$spec$mode == "regression") {
-    pred <- predict_lightgbm_regression_numeric(object, new_data, num_iteration_predict = tree)
+    pred <- predict_lightgbm_regression_numeric(object, new_data, num_iteration = tree)
     pred <- tibble::tibble(.pred = pred)
     nms <- names(pred)
   } else {
     if (type == "class") {
-      pred <- predict_lightgbm_classification_class(object, new_data, num_iteration_predict = tree)
+      pred <- predict_lightgbm_classification_class(object, new_data, num_iteration = tree)
       pred <- tibble::tibble(.pred_class = factor(pred, levels = object$lvl))
     } else {
-      pred <- predict_lightgbm_classification_prob(object, new_data, num_iteration_predict = tree)
+      pred <- predict_lightgbm_classification_prob(object, new_data, num_iteration = tree)
       names(pred) <- paste0(".pred_", names(pred))
     }
     nms <- names(pred)
