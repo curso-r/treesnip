@@ -4,12 +4,14 @@
 \alias{predict_lightgbm_classification_prob}
 \title{predict_lightgbm_classification_prob}
 \usage{
-predict_lightgbm_classification_prob(object, new_data)
+predict_lightgbm_classification_prob(object, new_data, ...)
 }
 \arguments{
 \item{object}{a fitted object.}
 
 \item{new_data}{data frame in which to look for variables with which to predict.}
+
+\item{...}{Additional named arguments passed to the predict() method of the lgb.Booster object passed to object.}
 }
 \description{
 Not intended for direct use.

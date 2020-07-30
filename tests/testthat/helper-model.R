@@ -84,11 +84,15 @@ expect_categorical_vars_works <- function(model) {
 }
 
 expect_can_tune_boost_tree <- function(model) {
+  mtcars$cyl <- factor(mtcars$cyl)
+  mtcars$vs <- factor(mtcars$vs)
 
   grid_df <- data.frame(trees = c(10, 20))
   resamples <- rsample::vfold_cv(mtcars, v = 2)
+
+  # regression
   adj <- tune::tune_grid(
-    model,
+    parsnip::set_mode(model, "regression"),
     mpg ~ .,
     resamples = resamples,
     grid = 3,
@@ -97,6 +101,21 @@ expect_can_tune_boost_tree <- function(model) {
 
   expect_equal(nrow(adj), nrow(resamples))
   expect_equal(nrow(tune::collect_metrics(adj)), 3)
+  expect_true(all(!is.nan(tune::collect_metrics(adj)$mean)))
+
+  # classification
+  adj <- tune::tune_grid(
+    parsnip::set_mode(model, "classification"),
+    cyl ~ .,
+    resamples = resamples,
+    grid = 3,
+    metrics = yardstick::metric_set(yardstick::accuracy, yardstick::roc_auc)
+  )
+
+  expect_equal(nrow(adj), nrow(resamples))
+  expect_equal(nrow(tune::collect_metrics(adj)), 6)
+  expect_true(all(!is.nan(tune::collect_metrics(adj)$mean)))
+
 
 }
 
@@ -112,4 +131,21 @@ expect_accuracy <- function(pred, true, at_least) {
 
 expect_not_constant_predictions <- function(pred) {
   expect_true(length(unique(pred)) > 1)
+}
+
+expect_multi_predict_works <- function(model) {
+  df <- data.frame(x1 = runif(1000))
+  df$y <- df$x1 + rnorm(1000)
+
+  adj <- parsnip::fit(model, y ~ ., data = df)
+
+  expect_true(parsnip::has_multi_predict(adj))
+  expect_equal(parsnip::multi_predict_args(adj), "trees")
+
+  mp <- parsnip::multi_predict(adj, df[1:3,], trees = c(1, 3, 5))
+  expect_equal(nrow(mp), 3)
+  expect_equal(nrow(tidyr::unnest(mp, .pred)), 3*3)
+
+  # expect that predictions from different trees would result in different predictions
+  expect_true(sum(purrr::map_dbl(mp$.pred, ~var(.x$.pred))) > 0)
 }

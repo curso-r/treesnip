@@ -113,7 +113,7 @@ add_boost_tree_lightgbm <- function() {
     parsnip = "trees",
     original = "num_iterations",
     func = list(pkg = "dials", fun = "trees"),
-    has_submodel = FALSE
+    has_submodel = TRUE
   )
   parsnip::set_model_arg(
     model = "boost_tree",
@@ -161,16 +161,7 @@ prepare_df_lgbm <- function(x, y = NULL) {
   categorical_cols <- categorical_columns(x)
   x <- categorical_features_to_int(x, categorical_cols)
   x <- as.matrix(x)
-
-  if (is.null(y))
-    return(x)
-
-  lightgbm::lgb.Dataset(
-    data = as.matrix(x),
-    label = y,
-    categorical_feature = categorical_cols,
-    feature_pre_filter = FALSE
-  )
+  return(x)
 }
 
 #' Boosted trees via lightgbm
@@ -258,7 +249,12 @@ train_lightgbm <- function(x, y, max_depth = 6, num_iterations = 100, learning_r
 
 
   # train ------------------------
-  d <- prepare_df_lgbm(x, y)
+  d <- lightgbm::lgb.Dataset(
+    data = prepare_df_lgbm(x),
+    label = y,
+    categorical_feature = categorical_columns(x),
+    feature_pre_filter = FALSE
+  )
 
   main_args <- list(
     data = quote(d),
@@ -276,10 +272,11 @@ train_lightgbm <- function(x, y, max_depth = 6, num_iterations = 100, learning_r
 #' @param object a fitted object.
 #'
 #' @param new_data data frame in which to look for variables with which to predict.
+#' @param ... Additional named arguments passed to the predict() method of the lgb.Booster object passed to object.
 #'
 #' @export
-predict_lightgbm_classification_prob <- function(object, new_data) {
-  p <- stats::predict(object$fit, prepare_df_lgbm(new_data), reshape = TRUE)
+predict_lightgbm_classification_prob <- function(object, new_data, ...) {
+  p <- stats::predict(object$fit, prepare_df_lgbm(new_data), reshape = TRUE, ...)
   if(is.vector(p)) {
     p <- tibble::tibble(p1 = 1 - p, p2 = p)
   }
@@ -294,10 +291,11 @@ predict_lightgbm_classification_prob <- function(object, new_data) {
 #' @param object a fitted object.
 #'
 #' @param new_data data frame in which to look for variables with which to predict.
+#' @param ... Additional named arguments passed to the predict() method of the lgb.Booster object passed to object.
 #'
 #' @export
-predict_lightgbm_classification_class <- function(object, new_data) {
-  p <- predict_lightgbm_classification_prob(object, prepare_df_lgbm(new_data))
+predict_lightgbm_classification_class <- function(object, new_data, ...) {
+  p <- predict_lightgbm_classification_prob(object, prepare_df_lgbm(new_data), ...)
   q <- apply(p, 1, function(x) which.max(x))
   names(p)[q]
 }
@@ -310,15 +308,67 @@ predict_lightgbm_classification_class <- function(object, new_data) {
 #' @param object a fitted object.
 #'
 #' @param new_data data frame in which to look for variables with which to predict.
+#' @param ... Additional named arguments passed to the predict() method of the lgb.Booster object passed to object.
 #'
 #' @export
-predict_lightgbm_regression_numeric <- function(object, new_data) {
-  p <- stats::predict(object$fit, prepare_df_lgbm(new_data), reshape = TRUE)
+predict_lightgbm_regression_numeric <- function(object, new_data, ...) {
+  # train_colnames <- object$fit$.__enclos_env__$private$train_set$get_colnames()
+  p <- stats::predict(object$fit, prepare_df_lgbm(new_data), reshape = TRUE, predict_disable_shape_check=TRUE, ...)
   p
 }
 
 
 
+#' Model predictions across many sub-models
+#'
+#' For some models, predictions can be made on sub-models in the model object.
+#'
+#' @param object A model_fit object.
+#' @param ... Optional arguments to pass to predict.model_fit(type = "raw") such as type.
+#' @param new_data A rectangular data object, such as a data frame.
+#' @param type A single character value or NULL. Possible values are "numeric", "class", "prob", "conf_int", "pred_int", "quantile", or "raw". When NULL, predict() will choose an appropriate value based on the model's mode.
+#' @param trees An integer vector for the number of trees in the ensemble.
+#'
+#' @export
+#' @importFrom purrr map_df
+#' @importFrom parsnip multi_predict
+multi_predict._lgb.Booster <- function(object, new_data, type = NULL, trees = NULL, ...) {
+  if (any(names(rlang::enquos(...)) == "newdata")) {
+    rlang::abort("Did you mean to use `new_data` instead of `newdata`?")
+  }
+
+  trees <- sort(trees)
+
+  res <- map_df(trees, lightgbm_by_tree, object = object, new_data = new_data, type = type)
+  res <- dplyr::arrange(res, .row, trees)
+  res <- split(res[, -1], res$.row)
+  names(res) <- NULL
+
+  tibble::tibble(.pred = res)
+
+}
+
+lightgbm_by_tree <- function(tree, object, new_data, type = NULL) {
+
+  # switch based on prediction type
+  if (object$spec$mode == "regression") {
+    pred <- predict_lightgbm_regression_numeric(object, new_data, num_iteration = tree)
+    pred <- tibble::tibble(.pred = pred)
+    nms <- names(pred)
+  } else {
+    if (type == "class") {
+      pred <- predict_lightgbm_classification_class(object, new_data, num_iteration = tree)
+      pred <- tibble::tibble(.pred_class = factor(pred, levels = object$lvl))
+    } else {
+      pred <- predict_lightgbm_classification_prob(object, new_data, num_iteration = tree)
+      names(pred) <- paste0(".pred_", names(pred))
+    }
+    nms <- names(pred)
+  }
+  pred[["trees"]] <- tree
+  pred[[".row"]] <- 1:nrow(new_data)
+  pred[, c(".row", "trees", nms)]
+}
 
 
 
