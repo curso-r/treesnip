@@ -134,14 +134,17 @@ expect_not_constant_predictions <- function(pred) {
 }
 
 expect_multi_predict_works <- function(model) {
-  adj <- parsnip::fit(model, mpg ~ ., data = mtcars)
+  df <- data.frame(x1 = runif(1000))
+  df$y <- df$x1 + rnorm(1000)
+
+  adj <- parsnip::fit(model, y ~ ., data = df)
 
   expect_true(parsnip::has_multi_predict(adj))
   expect_equal(parsnip::multi_predict_args(adj), "trees")
 
-  mp <- parsnip::multi_predict(adj, mtcars, trees = c(1, 3, 5))
-  expect_equal(nrow(mp), nrow(mtcars))
-  expect_equal(nrow(tidyr::unnest(mp, .pred)), 3*nrow(mtcars))
+  mp <- parsnip::multi_predict(adj, df[1:3,], trees = c(1, 3, 5))
+  expect_equal(nrow(mp), 3)
+  expect_equal(nrow(tidyr::unnest(mp, .pred)), 3*3)
 
   # expect that predictions from different trees would result in different predictions
   expect_true(sum(purrr::map_dbl(mp$.pred, ~var(.x$.pred))) > 0)
