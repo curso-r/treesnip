@@ -17,7 +17,7 @@ library(knitr)
 library(kableExtra)
 ```
 
-# treesnip
+# treesnip <a href='https://curso-r.github.io/treesnip'><img src='man/figures/logo.png' align="right" height="139" /></a>
 
 <!-- badges: start -->
 [![R build status](https://github.com/curso-r/treesnip/workflows/R-CMD-check/badge.svg)](https://github.com/curso-r/treesnip)
