@@ -107,12 +107,12 @@ expect_can_tune_boost_tree <- function(model) {
     parsnip::set_mode(model, "classification"),
     cyl ~ .,
     resamples = resamples,
-    grid = 3,
+    grid = 2,
     metrics = yardstick::metric_set(yardstick::accuracy, yardstick::roc_auc)
   )
 
   expect_equal(nrow(adj), nrow(resamples))
-  expect_equal(nrow(tune::collect_metrics(adj)), 6)
+  expect_equal(nrow(tune::collect_metrics(adj)), 4)
   expect_true(all(!is.nan(tune::collect_metrics(adj)$mean)))
 
 
