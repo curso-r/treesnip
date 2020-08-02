@@ -18,7 +18,6 @@ test_that("lightgbm with tune", {
     tree_depth = tune()
   )
   model <- parsnip::set_engine(model, "lightgbm")
-  model <- parsnip::set_mode(model, "regression")
 
   expect_can_tune_boost_tree(model)
 
