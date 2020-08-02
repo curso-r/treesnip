@@ -238,6 +238,9 @@ train_catboost <- function(x, y, depth = 6, iterations = 1000, learning_rate = N
                            rsm = 1, min_data_in_leaf = 1, subsample = 1,
                            categorical_cols = NULL, ...) {
 
+  # learning rate --------------------
+  learning_rate <- max(learning_rate, 1e-6)
+
   # rsm ------------------------------
   if(!is.null(rsm)) {
     rsm <- rsm/ncol(x)
