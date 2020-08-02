@@ -8,7 +8,15 @@ test_that("lightgbm", {
 
 test_that("lightgbm with tune", {
 
-  model <- parsnip::boost_tree(mtry = 5, trees = tune())
+  model <- parsnip::boost_tree(
+    mtry = 5,
+    learn_rate = tune(),
+    loss_reduction = tune(),
+    sample_size = tune(),
+    trees = tune(),
+    min_n = tune(),
+    tree_depth = tune()
+  )
   model <- parsnip::set_engine(model, "lightgbm")
   model <- parsnip::set_mode(model, "regression")
 
