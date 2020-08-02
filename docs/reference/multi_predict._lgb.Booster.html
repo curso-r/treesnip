@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Boosted trees via lightgbm — train_lightgbm • treesnip</title>
+<title>Model predictions across many sub-models — multi_predict._lgb.Booster • treesnip</title>
 
 <!-- favicons -->
 <link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
@@ -46,9 +46,8 @@
 
 
 
-<meta property="og:title" content="Boosted trees via lightgbm — train_lightgbm" />
-<meta property="og:description" content="lightgbm_train is a wrapper for lightgbm tree-based models
-where all of the model arguments are in the main function." />
+<meta property="og:title" content="Model predictions across many sub-models — multi_predict._lgb.Booster" />
+<meta property="og:description" content="For some models, predictions can be made on sub-models in the model object." />
 <meta property="og:image" content="/logo.png" />
 
 
@@ -135,79 +134,43 @@ where all of the model arguments are in the main function." />
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Boosted trees via lightgbm</h1>
+    <h1>Model predictions across many sub-models</h1>
     <small class="dont-index">Source: <a href='https://github.com/curso-r/treesnip/blob/master/R/lightgbm.R'><code>R/lightgbm.R</code></a></small>
-    <div class="hidden name"><code>train_lightgbm.Rd</code></div>
+    <div class="hidden name"><code>multi_predict._lgb.Booster.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p><code>lightgbm_train</code> is a wrapper for <code>lightgbm</code> tree-based models
-where all of the model arguments are in the main function.</p>
+    <p>For some models, predictions can be made on sub-models in the model object.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>train_lightgbm</span>(
-  <span class='no'>x</span>,
-  <span class='no'>y</span>,
-  <span class='kw'>max_depth</span> <span class='kw'>=</span> <span class='fl'>6</span>,
-  <span class='kw'>num_iterations</span> <span class='kw'>=</span> <span class='fl'>100</span>,
-  <span class='kw'>learning_rate</span> <span class='kw'>=</span> <span class='fl'>0.1</span>,
-  <span class='kw'>feature_fraction</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>min_data_in_leaf</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='kw'>min_gain_to_split</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='kw'>bagging_fraction</span> <span class='kw'>=</span> <span class='fl'>1</span>,
-  <span class='no'>...</span>
-)</pre>
+    <pre class="usage"><span class='co'># S3 method for `_lgb.Booster`</span>
+<span class='fu'>multi_predict</span>(<span class='no'>object</span>, <span class='no'>new_data</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>trees</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='no'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>A data frame or matrix of predictors</p></td>
+      <th>object</th>
+      <td><p>A model_fit object.</p></td>
     </tr>
     <tr>
-      <th>y</th>
-      <td><p>A vector (factor or numeric) or matrix (numeric) of outcome data.</p></td>
+      <th>new_data</th>
+      <td><p>A rectangular data object, such as a data frame.</p></td>
     </tr>
     <tr>
-      <th>max_depth</th>
-      <td><p>An integer for the maximum depth of the tree.</p></td>
+      <th>type</th>
+      <td><p>A single character value or NULL. Possible values are "numeric", "class", "prob", "conf_int", "pred_int", "quantile", or "raw". When NULL, predict() will choose an appropriate value based on the model's mode.</p></td>
     </tr>
     <tr>
-      <th>num_iterations</th>
-      <td><p>An integer for the number of boosting iterations.</p></td>
-    </tr>
-    <tr>
-      <th>learning_rate</th>
-      <td><p>A numeric value between zero and one to control the learning rate.</p></td>
-    </tr>
-    <tr>
-      <th>feature_fraction</th>
-      <td><p>Subsampling proportion of columns.</p></td>
-    </tr>
-    <tr>
-      <th>min_data_in_leaf</th>
-      <td><p>A numeric value for the minimum sum of instances needed
-in a child to continue to split.</p></td>
-    </tr>
-    <tr>
-      <th>min_gain_to_split</th>
-      <td><p>A number for the minimum loss reduction required to make a
-further partition on a leaf node of the tree.</p></td>
-    </tr>
-    <tr>
-      <th>bagging_fraction</th>
-      <td><p>Subsampling proportion of rows.</p></td>
+      <th>trees</th>
+      <td><p>An integer vector for the number of trees in the ensemble.</p></td>
     </tr>
     <tr>
       <th>...</th>
-      <td><p>Other options to pass to <code>lightgbm.train</code>.</p></td>
+      <td><p>Optional arguments to pass to predict.model_fit(type = "raw") such as type.</p></td>
     </tr>
     </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
-
-    <p>A fitted <code>lightgbm.Model</code> object.</p>
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

@@ -8,6 +8,13 @@
 
 <title>predict_lightgbm_regression_numeric — predict_lightgbm_regression_numeric • treesnip</title>
 
+<!-- favicons -->
+<link rel="icon" type="image/png" sizes="16x16" href="../favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="../favicon-32x32.png">
+<link rel="apple-touch-icon" type="image/png" sizes="180x180" href="../apple-touch-icon.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="120x120" href="../apple-touch-icon-120x120.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="76x76" href="../apple-touch-icon-76x76.png" />
+<link rel="apple-touch-icon" type="image/png" sizes="60x60" href="../apple-touch-icon-60x60.png" />
 
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
@@ -41,6 +48,7 @@
 
 <meta property="og:title" content="predict_lightgbm_regression_numeric — predict_lightgbm_regression_numeric" />
 <meta property="og:description" content="Not intended for direct use." />
+<meta property="og:image" content="/logo.png" />
 
 
 
@@ -98,6 +106,9 @@
       <a href="../articles/parallel-processing.html">Parallel Processing</a>
     </li>
     <li>
+      <a href="../articles/threading-forking-benchmark.html">Threading vs Forking Benchmark - Tune Grid Speed</a>
+    </li>
+    <li>
       <a href="../articles/working-with-lightgbm-catboost.html">Working with lightgbm and catboost</a>
     </li>
   </ul>
@@ -132,7 +143,7 @@
     <p>Not intended for direct use.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>predict_lightgbm_regression_numeric</span>(<span class='no'>object</span>, <span class='no'>new_data</span>)</pre>
+    <pre class="usage"><span class='fu'>predict_lightgbm_regression_numeric</span>(<span class='no'>object</span>, <span class='no'>new_data</span>, <span class='no'>...</span>)</pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -144,6 +155,10 @@
     <tr>
       <th>new_data</th>
       <td><p>data frame in which to look for variables with which to predict.</p></td>
+    </tr>
+    <tr>
+      <th>...</th>
+      <td><p>Additional named arguments passed to the predict() method of the lgb.Booster object passed to object.</p></td>
     </tr>
     </table>
 
