@@ -184,8 +184,8 @@ prepare_df_lgbm <- function(x, y = NULL) {
 #' @return A fitted `lightgbm.Model` object.
 #' @keywords internal
 #' @export
-train_lightgbm <- function(x, y, max_depth = 6, num_iterations = 100, learning_rate = 0.1,
-                           feature_fraction = 1, min_data_in_leaf = 1, min_gain_to_split = 0, bagging_fraction = 1, ...) {
+train_lightgbm <- function(x, y, max_depth = 17, num_iterations = 10, learning_rate = 0.1,
+                           feature_fraction = 1, min_data_in_leaf = 20, min_gain_to_split = 0, bagging_fraction = 1, ...) {
 
   force(x)
   force(y)
@@ -239,10 +239,13 @@ train_lightgbm <- function(x, y, max_depth = 6, num_iterations = 100, learning_r
   # parallelism should be explicitly specified by the user
   if(all(sapply(others[c("num_threads", "num_thread", "nthread", "nthreads", "n_jobs")], is.null))) others$num_threads <- 1L
 
+  if(max_depth > 17) {
+    warning("max_depth > 17, num_leaves truncated to 2^17 - 1")
+    max_depth <- 17
+  }
+
   if(is.null(others$num_leaves)) {
-    others$num_leaves = max(2^min(max_depth, 17) - 1, 2)
-    if(max_depth > 17)
-      warning("max_depth > 17, num_leaves truncated to 2^17 - 1")
+    others$num_leaves = max(2^max_depth - 1, 2)
   }
 
   arg_list <- purrr::compact(c(arg_list, others))
