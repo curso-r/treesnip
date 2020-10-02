@@ -31,11 +31,19 @@ expect_binary_classification_works <- function(model) {
 
   adj <- parsnip::fit(model, vs ~ ., data = mtcars_class_binary)
 
+  # type prob
   pred <- predict(adj, mtcars_class_binary, type = "prob")
   expect_equal(nrow(pred), nrow(mtcars_class_binary))
   expect_equal(names(pred), c(".pred_0", ".pred_1"))
   expect_not_constant_predictions(pred$.pred_1)
+  expect_between_0_and_1(pred$.pred_1)
+  expect_between_0_and_1(pred$.pred_0)
 
+  # type raw
+  pred <- predict(adj, mtcars_class_binary, type = "raw")
+  expect_equal(length(pred), nrow(mtcars_class_binary))
+
+  # type class
   pred <- predict(adj, mtcars_class_binary)
   expect_equal(nrow(pred), nrow(mtcars_class_binary))
   expect_equal(names(pred), ".pred_class")
@@ -130,6 +138,11 @@ expect_accuracy <- function(pred, true, at_least) {
 
 expect_not_constant_predictions <- function(pred) {
   expect_true(length(unique(pred)) > 1)
+}
+
+expect_between_0_and_1 <- function(pred) {
+  expect_true(max(pred) <= 1)
+  expect_true(min(pred) >= 0)
 }
 
 expect_multi_predict_works <- function(model) {

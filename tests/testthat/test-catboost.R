@@ -71,3 +71,4 @@ test_that("catboost multi_predict", {
 
   expect_multi_predict_works(model)
 })
+
