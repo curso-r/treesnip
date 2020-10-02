@@ -98,6 +98,20 @@ add_boost_tree_lightgbm <- function() {
     )
   )
 
+  parsnip::set_pred(
+    model = "boost_tree",
+    eng = "lightgbm",
+    mode = "classification",
+    type = "raw",
+    value = parsnip::pred_value_template(
+      pre = NULL,
+      post = NULL,
+      func = c(pkg = "treesnip", fun = "predict_lightgbm_classification_raw"),
+      object = quote(object),
+      new_data = quote(new_data)
+    )
+  )
+
   # model args ----------------------------------------------------
   parsnip::set_model_arg(
     model = "boost_tree",
@@ -303,6 +317,19 @@ predict_lightgbm_classification_class <- function(object, new_data, ...) {
   names(p)[q]
 }
 
+#' predict_lightgbm_classification_raw
+#'
+#' Not intended for direct use.
+#'
+#' @param object a fitted object.
+#'
+#' @param new_data data frame in which to look for variables with which to predict.
+#' @param ... Additional named arguments passed to the predict() method of the lgb.Booster object passed to object.
+#'
+#' @export
+predict_lightgbm_classification_raw <- function(object, new_data, ...) {
+  stats::predict(object$fit, prepare_df_lgbm(new_data), reshape = TRUE, rawscore = TRUE, ...)
+}
 
 #' predict_lightgbm_regression_numeric
 #'
