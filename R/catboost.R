@@ -118,7 +118,7 @@ add_boost_tree_catboost <- function() {
         x
       },
       func = c(pkg = NULL, fun = "predict"),
-      args = list(object = quote(object$fit), new_data = quote(new_data))
+      args = list(object = quote(object$fit), new_data = quote(new_data), type = "prob")
     )
   )
 
