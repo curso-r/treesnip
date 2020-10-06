@@ -20,7 +20,8 @@ Suggests:
     modeldata,
     lightgbm,
     knitr,
-    rmarkdown
+    rmarkdown,
+    readr
 RoxygenNote: 7.1.1
 Imports: 
     parsnip,

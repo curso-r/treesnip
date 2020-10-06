@@ -21,7 +21,7 @@ Parsnip principles states that *parallel processing must be explictly requested 
 ```{r, eval = FALSE, message=FALSE}
 library(tidymodels)
 library(treesnip)
-big_mtcars <- mtcars %>% sample_n(1000000, replace = TRUE)
+big_mtcars <- mtcars %>% sample_n(100000, replace = TRUE)
 
 # model spec
 model <- boost_tree(tree_depth = tune()) %>%
