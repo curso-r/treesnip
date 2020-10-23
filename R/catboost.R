@@ -304,7 +304,7 @@ train_catboost <- function(x, y, depth = 6, iterations = 1000, learning_rate = N
     params = arg_list
   )
 
-  call <- parsnip:::make_call(fun = "catboost.train", ns = "catboost", main_args)
+  call <- parsnip::make_call(fun = "catboost.train", ns = "catboost", main_args)
   rlang::eval_tidy(call, env = rlang::current_env())
 }
 

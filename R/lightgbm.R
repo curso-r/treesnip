@@ -280,7 +280,7 @@ train_lightgbm <- function(x, y, max_depth = 17, num_iterations = 10, learning_r
     params = arg_list
   )
 
-  call <- parsnip:::make_call(fun = "lgb.train", ns = "lightgbm", main_args)
+  call <- parsnip::make_call(fun = "lgb.train", ns = "lightgbm", main_args)
   rlang::eval_tidy(call, env = rlang::current_env())
 }
 
