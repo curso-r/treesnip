@@ -19,17 +19,6 @@ jobs:
         run: |
           remotes::install_url("https://github.com/catboost/catboost/releases/download/v0.23/catboost-R-Windows-0.23.tgz", INSTALL_opts = c("--no-multiarch"))
         shell: Rscript {0}
-      - name: Install LightGBM
-        run: |
-          install.packages(c("data.table", "R6", "jsonlite"))
-          install.packages(
-            sprintf(
-              "https://github.com/curso-r/lightgbm-build/releases/download/windows-r-%d.%d/lightgbm_2.3.2.zip",
-              getRversion()$major, getRversion()$minor
-            ),
-            repos = NULL, type = "win.binary"
-          )
-        shell: Rscript {0}
       - name: Install dependencies
         run: |
           remotes::install_deps(dependencies = TRUE, INSTALL_opts = c("--no-multiarch"))
