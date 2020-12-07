@@ -30,13 +30,6 @@ Not on CRAN yet.
 remotes::install_github("curso-r/treesnip")
 ```
 
-**Hint:** for easy lightgbm installation, check the {rightgbm} package.
-
-``` r
-devtools::install_github("curso-r/rightgbm")
-rightgbm::install_lightgbm()
-```
-
 ## Minimal Example
 
 ``` r
