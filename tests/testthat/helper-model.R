@@ -5,7 +5,7 @@ mtcars_class_binary$vs <- as.factor(mtcars$vs)
 
 expect_all_modes_works <- function(model, engine) {
   if(engine == "lightgbm") {
-    model <- parsnip::set_engine(model, engine, verbosity = -1L)
+    model <- parsnip::set_engine(model, engine)
   } else {
     model <- parsnip::set_engine(model, engine)
   }
