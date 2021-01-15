@@ -205,6 +205,7 @@ train_lightgbm <- function(x, y, max_depth = 17, num_iterations = 10, learning_r
 
   force(x)
   force(y)
+  others <- list(...)
 
   # feature_fraction ------------------------------
   if(!is.null(feature_fraction)) {
@@ -220,25 +221,25 @@ train_lightgbm <- function(x, y, max_depth = 17, num_iterations = 10, learning_r
   }
 
   # loss and num_class -------------------------
-  if (is.numeric(y)) {
-    num_class <- 1
-    objective <- "regression"
-  } else {
-    lvl <- levels(y)
-    lvls <- length(lvl)
-    y <- as.numeric(y) - 1
-    if (lvls == 2) {
-      num_class <- 1
-      objective <- "binary"
+  if (!any(names(others) %in% c("objective"))) {
+    if (is.numeric(y)) {
+      others$num_class <- 1
+      others$objective <- "regression"
     } else {
-      num_class <- lvls
-      objective <- "multiclass"
+      lvl <- levels(y)
+      lvls <- length(lvl)
+      y <- as.numeric(y) - 1
+      if (lvls == 2) {
+        others$num_class <- 1
+        others$objective <- "binary"
+      } else {
+        others$num_class <- lvls
+        others$objective <- "multiclass"
+      }
     }
   }
 
   arg_list <- list(
-    num_class = num_class,
-    objective = objective,
     num_iterations = num_iterations,
     learning_rate = learning_rate,
     max_depth = max_depth,
@@ -249,7 +250,6 @@ train_lightgbm <- function(x, y, max_depth = 17, num_iterations = 10, learning_r
   )
 
   # override or add some other args
-  others <- list(...)
   others <- others[!(names(others) %in% c("data", names(arg_list)))]
 
   # parallelism should be explicitly specified by the user

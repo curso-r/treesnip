@@ -6,6 +6,21 @@ test_that("lightgbm", {
 })
 
 
+test_that('lightgbm alternate objective', {
+  skip_if_not_installed("lightgbm")
+
+  spec <- boost_tree(mtry = 1, trees = 50, tree_depth = 15, min_n = 1) %>%
+    set_engine("lightgbm", objective = "huber") %>%
+    set_mode("regression")
+
+  lgb_fit <- spec %>% fit(mpg ~ ., data = mtcars)
+
+  info <- jsonlite::fromJSON(lightgbm::lgb.dump(lgb_fit$fit))
+
+  expect_equal(info$objective, "huber")
+  expect_all_modes_works(spec, 'lightgbm')
+})
+
 test_that("lightgbm with tune", {
 
   model <- parsnip::boost_tree(
