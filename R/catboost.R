@@ -240,6 +240,8 @@ train_catboost <- function(x, y, depth = 6, iterations = 1000, learning_rate = N
                            rsm = 1, min_data_in_leaf = 1, subsample = 1,
                            categorical_cols = NULL, ...) {
 
+  others <- list(...)
+
   # learning rate --------------------
   learning_rate <- max(learning_rate, 1e-6)
 
@@ -256,21 +258,7 @@ train_catboost <- function(x, y, depth = 6, iterations = 1000, learning_rate = N
     subsample <- 1
   }
 
-  # loss -------------------------
-  if (is.numeric(y)) {
-    loss_function <- "RMSE"
-  } else {
-    lvl <- levels(y)
-    y <- as.numeric(y) - 1
-    if (length(lvl) == 2) {
-      loss_function <- "Logloss"
-    } else {
-      loss_function <- "MultiClass"
-    }
-  }
-
   arg_list <- list(
-    loss_function = loss_function,
     iterations = iterations,
     learning_rate = learning_rate,
     depth = depth,
@@ -279,11 +267,28 @@ train_catboost <- function(x, y, depth = 6, iterations = 1000, learning_rate = N
     subsample = subsample
   )
 
+  # loss -------------------------
+  # objective accepted as an alias for loss_function
+  names(others)[names(others) %in% "objective"] <- "loss_function"
+
+  if (!any(names(others) %in% c("loss_function"))) {
+    if (is.numeric(y)) {
+      arg_list$loss_function <- "RMSE"
+    } else {
+      lvl <- levels(y)
+      y <- as.numeric(y) - 1
+      if (length(lvl) == 2) {
+        arg_list$loss_function <- "Logloss"
+      } else {
+        arg_list$loss_function <- "MultiClass"
+      }
+    }
+  }
+
   # train ------------------------
   d <- prepare_df_catboost(x, y = y, categorical_cols = categorical_cols)
 
   # override or add some other args
-  others <- list(...)
   others <- others[!(names(others) %in% c("learn_pool", "test_pool", names(arg_list)))]
 
   if(is.null(others$logging_level)) others$logging_level = "Silent"
