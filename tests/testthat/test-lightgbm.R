@@ -18,7 +18,6 @@ test_that('lightgbm alternate objective', {
   info <- jsonlite::fromJSON(lightgbm::lgb.dump(lgb_fit$fit))
 
   expect_equal(info$objective, "huber")
-  expect_all_modes_works(spec, 'lightgbm')
 })
 
 test_that("lightgbm with tune", {
