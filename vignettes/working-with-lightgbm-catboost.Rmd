@@ -20,7 +20,7 @@ knitr::opts_chunk$set(
 library(tidymodels)
 library(treesnip)
 data("diamonds", package = "ggplot2")
-
+diamonds <- diamonds %>% sample_n(1000)
 # vfold resamples
 diamonds_splits <- vfold_cv(diamonds, v = 5)
 ```
