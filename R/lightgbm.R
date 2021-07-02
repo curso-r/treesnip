@@ -171,6 +171,14 @@ add_boost_tree_lightgbm <- function() {
     func = list(pkg = "dials", fun = "sample_size"),
     has_submodel = FALSE
   )
+  parsnip::set_model_arg(
+    model = "boost_tree",
+    eng = "lightgbm",
+    parsnip = "stop_iter",
+    original = "early_stopping_rounds",
+    func = list(pkg = "dials", fun = "stop_iter"),
+    has_submodel = FALSE
+  )
 }
 
 prepare_df_lgbm <- function(x, y = NULL) {
@@ -193,6 +201,14 @@ prepare_df_lgbm <- function(x, y = NULL) {
 #' @param feature_fraction Subsampling proportion of columns.
 #' @param min_data_in_leaf A numeric value for the minimum sum of instances needed
 #'  in a child to continue to split.
+#' @param valids A positive number or a lgb.Dataset. If on `[0, 1)` the value, `valids`
+#' is a random proportion of data in `x` and `y` that are used for performance
+#' assessment and potential early stopping. If 1 or greater, it is the _number_
+#' of training set samples use for these purposes. If `lgb.Dataset`, it will use as is.
+#' @param early_stopping_rounds An integer or `NULL`. If not `NULL`, it is the number of
+#' training iterations without improvement before stopping. If `validation` is
+#' used, performance is base on the validation set; otherwise, the training set
+#' is used.
 #' @param min_gain_to_split A number for the minimum loss reduction required to make a
 #'  further partition on a leaf node of the tree.
 #' @param bagging_fraction Subsampling proportion of rows.
@@ -200,12 +216,45 @@ prepare_df_lgbm <- function(x, y = NULL) {
 #' @return A fitted `lightgbm.Model` object.
 #' @keywords internal
 #' @export
-train_lightgbm <- function(x, y, max_depth = 17, num_iterations = 10, learning_rate = 0.1,
+train_lightgbm <- function(x, y, max_depth = 17, num_iterations = 10, learning_rate = 0.1, early_stopping_rounds = NULL,
                            feature_fraction = 1, min_data_in_leaf = 20, min_gain_to_split = 0, bagging_fraction = 1, ...) {
 
   force(x)
   force(y)
   others <- list(...)
+  n <- nrow(x)
+
+  # early_stopping_rounds ------------------------------
+  if(is.null(early_stopping_rounds)) early_stopping_rounds <- 0
+
+  if(early_stopping_rounds > 0) {
+    if (early_stopping_rounds <= 1) {
+      rlang::abort(paste0("`early_stopping_rounds` should be on [2, ",  num_iterations, ")."))
+    } else if (early_stopping_rounds >= num_iterations) {
+      early_stopping_rounds <- num_iterations - 1
+      rlang::warn(paste0("`early_stopping_rounds` was reduced to ", early_stopping_rounds, "."))
+    }
+  }
+
+  # valids ----------------------------------------
+  if(early_stopping_rounds > 0) {
+    if(is.numeric(valids) && valids >= 0) {
+      if(valids >= 0 & valids < 1) {
+        trn_index <- sample.int(n, size = floor(n * (1 - valids)) + 1)
+      } else {
+        valids <- floor(valids)
+      }
+
+      valids <- lightgbm::lgb.Dataset(
+        data = prepare_df_lgbm(x),
+        label = y,
+        categorical_feature = categorical_columns(x),
+        feature_pre_filter = FALSE
+      )
+    } else if(!inherits(valids, "lgb.Dataset")) {
+      rlang::abort("`valids` sould be either a positive number or a lgb.Dataset.")
+    } # else ---> valids is a lgb.Dataset
+  }
 
   # feature_fraction ------------------------------
   if(!is.null(feature_fraction)) {
@@ -246,7 +295,8 @@ train_lightgbm <- function(x, y, max_depth = 17, num_iterations = 10, learning_r
     feature_fraction = feature_fraction,
     min_data_in_leaf = min_data_in_leaf,
     min_gain_to_split = min_gain_to_split,
-    bagging_fraction = bagging_fraction
+    bagging_fraction = bagging_fraction,
+    early_stopping_rounds = early_stopping_rounds
   )
 
   # override or add some other args

@@ -3,11 +3,11 @@ mtcars_class$cyl <- as.factor(mtcars$cyl)
 mtcars_class_binary <- mtcars
 mtcars_class_binary$vs <- as.factor(mtcars$vs)
 
-expect_all_modes_works <- function(model, engine) {
+expect_all_modes_works <- function(model, engine, ...) {
   if(engine == "lightgbm") {
-    model <- parsnip::set_engine(model, engine, verbosity = -1L)
+    model <- parsnip::set_engine(model, engine, verbosity = -1L, ...)
   } else {
-    model <- parsnip::set_engine(model, engine)
+    model <- parsnip::set_engine(model, engine, ...)
   }
 
   expect_regression_works(parsnip::set_mode(model, "regression"))

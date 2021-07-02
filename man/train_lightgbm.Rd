@@ -10,6 +10,7 @@ train_lightgbm(
   max_depth = 17,
   num_iterations = 10,
   learning_rate = 0.1,
+  early_stopping_rounds = 0,
   feature_fraction = 1,
   min_data_in_leaf = 20,
   min_gain_to_split = 0,

@@ -85,10 +85,10 @@ test_that("lightgbm loss_reduction", {
   }
 })
 
-test_that("lightgbm tree_depth", {
-  hyperparameters <- data.frame(loss_reduction = c(0, 0.2, 2))
+test_that("lightgbm stop_iter", {
+  hyperparameters <- data.frame(stop_iter = c(2, 3, 4))
   for(i in 1:nrow(hyperparameters)) {
-    model <- parsnip::boost_tree(loss_reduction = hyperparameters$loss_reduction[i], min_n = 1)
+    model <- parsnip::boost_tree(stop_iter = hyperparameters$stop_iter[i], min_n = 1)
     expect_all_modes_works(model, 'lightgbm')
   }
 })
