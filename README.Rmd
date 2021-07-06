@@ -26,14 +26,12 @@ library(kableExtra)
 This package provides the following bindings for parsnip package:
 
 - the `tree` engine for `decision_tree`;
-- the `catboost` engine for `boost_tree`;
 - the `lightGBM` engine for `boost_tree`.
 
 **docs**
 
 - [tree package docs](https://cran.r-project.org/web/packages/tree/tree.pdf)
 - [LightGBM docs](https://lightgbm.readthedocs.io/)
-- [Catboost docs](https://catboost.ai/docs/)
 
 ## Installation
 
@@ -53,7 +51,6 @@ parsnip::set_engine(model, "tree")
 # boost_tree
 model <- parsnip::boost_tree(mtry = 1, trees = 50)
 
-parsnip::set_engine(model, "catboost")
 parsnip::set_engine(model, "lightgbm")
 ```
 
@@ -76,15 +73,15 @@ tibble::tribble(
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 tibble::tribble(
-  ~ parsnip, ~catboost, ~lightGBM,
-  'mtry', 'rsm', 'feature_fraction',
-  'trees', 'iterations', 'num_iterations',
-  'min_n', 'min_data_in_leaf', 'min_data_in_leaf',
-  'tree_depth', 'depth', 'max_depth',
-  'learn_rate', 'learning_rate', 'learning_rate',
-  'loss_reduction', cell_spec('Not found', color = 'red', bold = TRUE), 'min_gain_to_split',
-  'sample_size', 'subsample', 'bagging_fraction'
-) %>% kable(escape = FALSE) 
+          ~parsnip,           ~lightGBM,
+            "mtry",  "feature_fraction",
+           "trees",    "num_iterations",
+           "min_n",  "min_data_in_leaf",
+      "tree_depth",         "max_depth",
+      "learn_rate",     "learning_rate",
+  "loss_reduction", "min_gain_to_split",
+     "sample_size",  "bagging_fraction"
+  ) %>% kable(escape = FALSE) 
 ```
 
 ## Roadmap
@@ -96,13 +93,13 @@ ok <- function(x = "") {
   else ":red_circle:"
 }
 tibble::tribble(
-  ~fun,              ~tree,    ~catboost,    ~lightGBM,
-  "set_fit",       ok("x"),      ok("x"),      ok("x"),
-  "set_model_arg", ok("x"),      ok("x"),      ok("x"),
-  "set_pred",      ok("x"),      ok("x"),      ok("x"),
-  "train",         ok("x"),      ok("x"),      ok("x"),
-  "predict",       ok("x"),      ok("x"),      ok("x"),
-  "multi_predict", ok("n"),      ok("x"),      ok("x"),
-  "tests",         ok("x"),      ok("x"),      ok("x")
+  ~fun,              ~tree,   ~lightGBM,
+  "set_fit",       ok("x"),     ok("x"),
+  "set_model_arg", ok("x"),     ok("x"),
+  "set_pred",      ok("x"),     ok("x"),
+  "train",         ok("x"),     ok("x"),
+  "predict",       ok("x"),     ok("x"),
+  "multi_predict", ok("n"),     ok("x"),
+  "tests",         ok("x"),     ok("x") 
 ) %>% kable() 
 ```

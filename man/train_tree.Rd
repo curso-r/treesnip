@@ -2,7 +2,7 @@
 % Please edit documentation in R/tree.R
 \name{train_tree}
 \alias{train_tree}
-\title{Simple wraper around \code{tree::tree}}
+\title{Simple wrapper around \code{tree::tree}}
 \usage{
 train_tree(...)
 }
@@ -10,6 +10,6 @@ train_tree(...)
 \item{...}{arguments passed directly to \verb{[tree::tree()]}.}
 }
 \description{
-Simple wraper aroound \code{tree::tree} that adds a simple
+Simple wrapper around \code{tree::tree} that adds a simple
 class and sets the \code{mincut} argument to 0.
 }

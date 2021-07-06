@@ -1,35 +1,53 @@
 Package: treesnip
 Title: Tree Based Model Engines for 'Parsnip'
 Version: 0.1.0.9000
-Authors@R: c(
-    person("Daniel", "Falbel", role = c("aut", "cre"), email = "dfalbel@curso-r.com"),
-    person("Athos", "Damiani", role = c("aut"), email = "adamiani@curso-r.com"),
-    person("Roel M.", "Hogervorst", email = "hogervorst.rm@gmail.com", role = "aut",
-                          comment = c(ORCID = "0000-0001-7509-0328"))
-    )
-URL: https://github.com/curso-r/treesnip
-Description: Provides tree, catboost and lightgbm engines for 'parsnip'.
+Authors@R: 
+    c(person(given = "Daniel",
+             family = "Falbel",
+             role = c("aut", "cre"),
+             email = "dfalbel@curso-r.com"),
+      person(given = "Athos",
+             family = "Damiani",
+             role = "aut",
+             email = "adamiani@curso-r.com"),
+      person(given = "Roel M.",
+             family = "Hogervorst",
+             role = "aut",
+             email = "hogervorst.rm@gmail.com",
+             comment = c(ORCID = "0000-0001-7509-0328")))
+Description: Provides tree, lightgbm and other engines for 'parsnip'.
 License: GPL-3
+URL: https://github.com/curso-r/treesnip,
+    https://curso-r.github.io/treesnip/
+Depends: 
+    parsnip (>= 0.1.4),
+    R (>= 3.5.0)
+Imports: 
+    dplyr,
+    purrr,
+    rlang,
+    stats,
+    tibble,
+    tree
+Suggests: 
+    glue,
+    jsonlite,
+    knitr,
+    lightgbm,
+    markdown,
+    modeldata,
+    readr,
+    rmarkdown,
+    rsample,
+    scales,
+    testthat (>= 2.1.0),
+    tidymodels,
+    tidyr,
+    tune,
+    yardstick
+VignetteBuilder: 
+    knitr
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-Depends: 
-    parsnip (>= 0.1.4)
-Suggests: 
-    testthat (>= 2.1.0),
-    tidymodels,
-    catboost,
-    modeldata,
-    lightgbm,
-    knitr,
-    rmarkdown,
-    readr
 RoxygenNote: 7.1.1
-Imports: 
-    rlang,
-    purrr,
-    tree,
-    tibble,
-    dplyr,
-    stats
-VignetteBuilder: knitr
