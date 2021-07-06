@@ -15,10 +15,6 @@ jobs:
       - name: Install remotes
         run: install.packages(c("remotes", "rcmdcheck"))
         shell: Rscript {0}
-      - name: Install catboost
-        run: |
-          remotes::install_url("https://github.com/catboost/catboost/releases/download/v0.23/catboost-R-Windows-0.23.tgz", INSTALL_opts = c("--no-multiarch"))
-        shell: Rscript {0}
       - name: Install dependencies
         run: |
           remotes::install_deps(dependencies = TRUE, INSTALL_opts = c("--no-multiarch"))

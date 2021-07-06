@@ -17,8 +17,6 @@ knitr::opts_chunk$set(
 ## Rules of thumb
 
 - When tuning: `doParallel::registerDoParallel(8)` then `tune_grid()`/`tune_bayes()`
-- When fitting: `set_engine("catboost", nthread = 8)` then `fit()`/`last_fit()`
-
 
 ## Packages and data
 
@@ -36,8 +34,7 @@ Set `doParallel::registerDoParallel(8)` before `tune_grid()` or `tune_bayes()` a
 # model spec
 model <- boost_tree(tree_depth = tune()) %>%
   set_mode("regression") %>%
-  set_engine("catboost")
-# set_engine("lightgbm")
+  set_engine("lightgbm")
 
 # recipe
 rec <- recipe(mpg ~ ., data = big_mtcars)
@@ -59,7 +56,7 @@ Parsnip principles states that *parallel processing must be explictly requested 
 ```{r threading, eval = FALSE, message=FALSE}
 model <- boost_tree(tree_depth = tune()) %>%
   set_mode("regression") %>%
-  set_engine("catboost", nthread = 8) %>%
+  set_engine("lightgbm", nthread = 8) %>%
   finalize_model(select_best(tg, "rmse"))
 
 wf <- workflow() %>% add_recipe(rec) %>% add_model(model)
@@ -67,7 +64,7 @@ wf <- workflow() %>% add_recipe(rec) %>% add_model(model)
 definitive_fit <- fit(wf,  big_mtcars)
 ```
 
-PS: originally, there is no `nthread` parameter for {catboost} but {treesnip} made `nthread` an alias for `thread_count` for convenience.
+PS: {treesnip} made `nthread` an alias for `thread_count` for convenience.
 
 
 

@@ -1,8 +1,8 @@
 ---
-title: "Working with lightgbm and catboost"
+title: "Working with lightgbm"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{Working with lightgbm and catboost}
+  %\VignetteIndexEntry{Working with lightgbm}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -28,27 +28,25 @@ diamonds_splits <- vfold_cv(diamonds, v = 5)
 
 ## Model spec
 
-Both lightgbm and catboost are engines for `parsnip::boost_tree()`. All main hyperparameters are available, except `loss_reduction` for catboost.
+lightgbm is an engine for `parsnip::boost_tree()`. All main hyperparameters are available.
 
 ```{r}
 model_spec <- boost_tree(mtry = 5, trees = 500) %>% set_mode("regression")
 
-# model specs
+# model spec
 lightgbm_model <- model_spec %>% set_engine("lightgbm", nthread = 6)
-catboost_model <- model_spec %>% set_engine("catboost", nthread = 6)
 
 #workflows
 lightgbm_wf <- workflow() %>% add_model(lightgbm_model)
-catboost_wf <- workflow() %>% add_model(catboost_model)
 ```
 
 ## Recipes and categorical features
 
-Differently from xgboost, lightgbm and catboost deals with nominal columns natively. No `step_dummy()` or any other encoding required.
+Differently from xgboost, lightgbm deals with nominal columns natively. No `step_dummy()` or any other encoding required.
 
 ### Encodings benchmark
 
-In fact, avoiding `step_dummy()` seems to be a good idea when using lightgbm or catboost.
+In fact, avoiding `step_dummy()` seems to be a good idea when using lightgbm.
 
 ```{r fit_resample, cache = TRUE}
 rec_ordered <- recipe(price ~ ., data = diamonds) 
@@ -60,9 +58,6 @@ rec_factor <- rec_ordered %>% step_unorder(all_nominal())
 lightgbm_fit_ordered <- fit_resamples(add_recipe(lightgbm_wf, rec_ordered), resamples = diamonds_splits)
 lightgbm_fit_dummy <- fit_resamples(add_recipe(lightgbm_wf, rec_dummy), resamples = diamonds_splits)
 lightgbm_fit_factor <- fit_resamples(add_recipe(lightgbm_wf, rec_factor), resamples = diamonds_splits)
-catboost_fit_ordered <- fit_resamples(add_recipe(catboost_wf, rec_ordered), resamples = diamonds_splits)
-catboost_fit_dummy <- fit_resamples(add_recipe(catboost_wf, rec_dummy), resamples = diamonds_splits)
-catboost_fit_factor <- fit_resamples(add_recipe(catboost_wf, rec_factor), resamples = diamonds_splits)
 ```
 
 
@@ -71,12 +66,9 @@ bind_rows(
   collect_metrics(lightgbm_fit_ordered) %>% mutate(model = "lightgbm", encode = "ordered"),
   collect_metrics(lightgbm_fit_dummy) %>% mutate(model = "lightgbm", encode = "dummy"),
   collect_metrics(lightgbm_fit_factor) %>% mutate(model = "lightgbm", encode = "factor"),
-  collect_metrics(catboost_fit_ordered) %>% mutate(model = "catboost", encode = "ordered"),
-  collect_metrics(catboost_fit_dummy) %>% mutate(model = "catboost", encode = "dummy"),
-  collect_metrics(catboost_fit_factor) %>% mutate(model = "catboost", encode = "factor")
 ) %>%
   filter(.metric == "rmse") %>%
-  ggplot(aes(x = encode, y = mean, group = model, colour = model)) +
+  ggplot(aes(x = encode, y = mean)) +
   geom_point() +
   geom_errorbar(aes(ymin = mean - std_err, ymax = mean + std_err), width = 0.2) +
   geom_line() +
