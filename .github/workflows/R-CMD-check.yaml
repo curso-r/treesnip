@@ -46,7 +46,7 @@ jobs:
           )
         shell: Rscript {0}
       - name: Check
-        run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--no-multiarch"), error_on = "error")
+        run: rcmdcheck::rcmdcheck(args = c("--no-manual", "--no-multiarch"), error_on = "error", check_dir = "check")
         shell: Rscript {0}
       - name: Show testthat output
         if: always()
