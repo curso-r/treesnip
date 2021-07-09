@@ -168,7 +168,7 @@ add_boost_tree_lightgbm <- function() {
     eng = "lightgbm",
     parsnip = "sample_size",
     original = "bagging_fraction",
-    func = list(pkg = "dials", fun = "sample_size"),
+    func = list(pkg = "dials", fun = "sample_prop"),
     has_submodel = FALSE
   )
 }
