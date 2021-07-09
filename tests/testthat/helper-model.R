@@ -92,6 +92,9 @@ expect_categorical_vars_works <- function(model) {
 }
 
 expect_can_tune_boost_tree <- function(model) {
+
+  mtcars <- rbind(mtcars, mtcars)
+
   mtcars$cyl <- factor(mtcars$cyl)
   mtcars$vs <- factor(mtcars$vs)
 
