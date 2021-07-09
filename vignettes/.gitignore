@@ -1,3 +1,6 @@
 *.html
 *.R
 working-with-lightgbm-catboost_cache
+threading-forking-benchmark_cache
+parallel-processing_cache
+catboost_info
