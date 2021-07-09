@@ -1,9 +1,9 @@
-test_that("catboost", {
-
-  model <- parsnip::boost_tree(mtry = 1, trees = 50)
-  expect_all_modes_works(model, 'catboost')
-
-})
+# test_that("catboost", {
+#
+#   model <- parsnip::boost_tree(mtry = 1, trees = 50)
+#   expect_all_modes_works(model, 'catboost')
+#
+# })
 
 # test_that('catboost alternate objective', {
 #   skip_if_not_installed("catboost")
