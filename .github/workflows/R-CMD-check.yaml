@@ -19,6 +19,7 @@ jobs:
 
       - name: Install dev lightgbm
         run: |
+          cd ..
           git clone --recursive https://github.com/microsoft/LightGBM.git
           cd LightGBM
           sh build-cran-package.sh
@@ -37,6 +38,7 @@ jobs:
 
       - name: catboost and lightgbm
         run: |
+          library(parsnip)
           library(lightgbm)
           data(agaricus.train, package='lightgbm')
           train <- agaricus.train
