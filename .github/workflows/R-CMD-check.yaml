@@ -16,21 +16,26 @@ jobs:
       - name: Install remotes
         run: install.packages(c("remotes", "rcmdcheck"))
         shell: Rscript {0}
+
+      - name: Install dev lightgbm
+        run: |
+          git clone --recursive https://github.com/microsoft/LightGBM.git
+          cd LightGBM
+          sh build-cran-package.sh
+          R CMD INSTALL lightgbm_3.2.1.99.tar.gz
+
       - name: Install catboost
         run: |
           remotes::install_url("https://github.com/catboost/catboost/releases/download/v0.26/catboost-R-Windows-0.26.tgz", INSTALL_opts = c("--no-multiarch"))
         shell: Rscript {0}
-      - name: Install dependencies
+
+      - name: Install additional dependencies
         run: |
           remotes::install_deps(dependencies = TRUE, INSTALL_opts = c("--no-multiarch"))
         shell: Rscript {0}
+
       - name: catboost and lightgbm
         run: |
-          library(catboost)
-          features <- data.frame(feature1 = c(1, 2, 3), feature2 = factor(c('A', 'B', 'C')))
-          labels <- c(0, 0, 1)
-          train_pool <- catboost.load_pool(data = features, label = labels)
-
           library(lightgbm)
           data(agaricus.train, package='lightgbm')
           train <- agaricus.train
