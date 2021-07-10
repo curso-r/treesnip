@@ -1,9 +1,26 @@
-test_that("lightgbm", {
+test_that("simple test", {
 
-  model <- parsnip::boost_tree(mtry = 1, trees = 50, tree_depth = 15, min_n = 1)
+  library(lightgbm)
+  data(agaricus.train, package='lightgbm')
+  train <- agaricus.train
+  dtrain <- lgb.Dataset(train$data, label = train$label)
+  model <- lgb.cv(
+    params = list(
+      objective = "regression"
+      , metric = "l2"
+    )
+    , data = dtrain
+  )
 
-  expect_all_modes_works(model, 'lightgbm')
+  expect_s3_class(model, "lgb.CVBooster")
 })
+
+# test_that("lightgbm", {
+#
+#   model <- parsnip::boost_tree(mtry = 1, trees = 50, tree_depth = 15, min_n = 1)
+#
+#   expect_all_modes_works(model, 'lightgbm')
+# })
 #
 #
 # test_that('lightgbm alternate objective', {
