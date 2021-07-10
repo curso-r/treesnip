@@ -17,6 +17,11 @@ jobs:
         run: install.packages(c("remotes", "rcmdcheck"))
         shell: Rscript {0}
 
+      - name: Install additional dependencies
+        run: |
+          remotes::install_deps(dependencies = TRUE, INSTALL_opts = c("--no-multiarch"))
+        shell: Rscript {0}
+
       - name: Install dev lightgbm
         run: |
           cd ..
@@ -29,11 +34,6 @@ jobs:
       - name: Install catboost
         run: |
           remotes::install_url("https://github.com/catboost/catboost/releases/download/v0.26/catboost-R-Windows-0.26.tgz", INSTALL_opts = c("--no-multiarch"))
-        shell: Rscript {0}
-
-      - name: Install additional dependencies
-        run: |
-          remotes::install_deps(dependencies = TRUE, INSTALL_opts = c("--no-multiarch"))
         shell: Rscript {0}
 
       - name: catboost and lightgbm
