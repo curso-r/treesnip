@@ -49,6 +49,7 @@ jobs:
               )
               , data = dtrain
           )
+        shell: Rscript {0}
 
       - name: catboost and lightgbm
         run: |
