@@ -22,7 +22,7 @@ jobs:
           git clone --recursive https://github.com/microsoft/LightGBM.git
           cd LightGBM
           sh build-cran-package.sh
-          R CMD INSTALL lightgbm_3.2.1.99.tar.gz
+          Rscript -e "install.packages('lightgbm_3.2.1.99.tar.gz', repos = NULL, type='source')"
 
       - name: Install catboost
         run: |
