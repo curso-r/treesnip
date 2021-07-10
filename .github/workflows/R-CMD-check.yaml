@@ -38,6 +38,20 @@ jobs:
 
       - name: catboost and lightgbm
         run: |
+          library(lightgbm)
+          data(agaricus.train, package='lightgbm')
+          train <- agaricus.train
+          dtrain <- lgb.Dataset(train$data, label = train$label)
+          model <- lgb.cv(
+              params = list(
+                  objective = "regression"
+                  , metric = "l2"
+              )
+              , data = dtrain
+          )
+
+      - name: catboost and lightgbm
+        run: |
           library(parsnip)
           library(lightgbm)
           data(agaricus.train, package='lightgbm')
