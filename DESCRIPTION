@@ -23,7 +23,9 @@ Suggests:
     lightgbm,
     knitr,
     rmarkdown,
-    readr
+    readr,
+    glue,
+    scales
 RoxygenNote: 7.1.1
 Imports: 
     rlang,

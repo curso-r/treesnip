@@ -16,8 +16,8 @@ test_that('catboost alternate objective', {
   info <- catboost::catboost.get_model_params(cat_fit$fit)
 
   expect_equal(info$loss_function$type, "Huber")
-  expect_equal(info$loss_function$params[1], "delta")
-  expect_equal(info$loss_function$params[2], "1")
+  expect_true(grepl("delta", info$loss_function$params[1]))
+  expect_equal(info$loss_function$params[[2]], "1")
 })
 
 test_that("catboost with tune", {

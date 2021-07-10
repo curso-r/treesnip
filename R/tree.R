@@ -12,6 +12,18 @@ add_decision_tree_tree <- function() {
 
   parsnip::set_dependency("decision_tree", eng = "tree", pkg = "tree")
 
+  parsnip::set_encoding(
+    model = "decision_tree",
+    eng = "tree",
+    mode = "regression",
+    options = list(
+      predictor_indicators = "none",
+      compute_intercept = FALSE,
+      remove_intercept = FALSE,
+      allow_sparse_x = FALSE
+    )
+  )
+
   parsnip::set_fit(
     model = "decision_tree",
     eng = "tree",
