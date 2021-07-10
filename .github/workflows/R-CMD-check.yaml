@@ -23,7 +23,7 @@ jobs:
           git clone --recursive https://github.com/microsoft/LightGBM.git
           cd LightGBM
           sh build-cran-package.sh
-          Rscript -e "install.packages(c('data.table', 'jsonlite'))"
+          Rscript -e "install.packages(c('R6', 'data.table', 'jsonlite'))"
           Rscript -e "install.packages('lightgbm_3.2.1.99.tar.gz', repos = NULL, type='source')"
 
       - name: Install catboost
