@@ -40,6 +40,7 @@ jobs:
         run: |
           library(lightgbm)
           data(agaricus.train, package='lightgbm')
+          print(sessionInfo())
           train <- agaricus.train
           dtrain <- lgb.Dataset(train$data, label = train$label)
           model <- lgb.cv(
@@ -56,6 +57,7 @@ jobs:
           library(parsnip)
           library(lightgbm)
           data(agaricus.train, package='lightgbm')
+          print(sessionInfo())
           train <- agaricus.train
           dtrain <- lgb.Dataset(train$data, label = train$label)
           model <- lgb.cv(
