@@ -22,6 +22,11 @@ jobs:
           remotes::install_deps(dependencies = TRUE, INSTALL_opts = c("--no-multiarch"))
         shell: Rscript {0}
 
+      - name: Remove lightgbm
+        run: |
+          remove.packages("lightgbm")
+        shell: Rscript {0}
+
       - name: Install dev lightgbm
         run: |
           cd ..
