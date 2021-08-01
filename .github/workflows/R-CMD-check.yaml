@@ -30,7 +30,7 @@ jobs:
       - name: Install dev lightgbm
         run: |
           cd ..
-          git clone --recursive https://github.com/microsoft/LightGBM.git
+          git clone --recursive https://github.com/microsoft/LightGBM.git --branch fix/network-setup
           cd LightGBM
           sh build-cran-package.sh
           Rscript -e "install.packages(c('R6', 'data.table', 'jsonlite'))"
