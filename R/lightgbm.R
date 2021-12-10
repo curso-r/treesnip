@@ -271,8 +271,7 @@ train_lightgbm <- function(x, y, max_depth = 17, num_iterations = 10, learning_r
   d <- lightgbm::lgb.Dataset(
     data = prepare_df_lgbm(x),
     label = y,
-    categorical_feature = categorical_columns(x),
-    feature_pre_filter = FALSE
+    categorical_feature = categorical_columns(x)
   )
 
   main_args <- list(
