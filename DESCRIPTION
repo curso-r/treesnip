@@ -2,34 +2,36 @@ Package: treesnip
 Title: Tree Based Model Engines for 'Parsnip'
 Version: 0.1.0.9000
 Authors@R: c(
-    person("Daniel", "Falbel", role = c("aut", "cre"), email = "dfalbel@curso-r.com"),
-    person("Athos", "Damiani", role = c("aut"), email = "adamiani@curso-r.com"),
-    person("Roel M.", "Hogervorst", email = "hogervorst.rm@gmail.com", role = "aut",
-                          comment = c(ORCID = "0000-0001-7509-0328"))
-    )
-URL: https://github.com/curso-r/treesnip
+    person("Daniel", "Falbel", , "dfalbel@curso-r.com", role = c("aut", "cre")),
+    person("Athos", "Damiani", , "adamiani@curso-r.com", role = "aut"),
+    person("Roel M.", "Hogervorst", , "hogervorst.rm@gmail.com", role = "aut",
+           comment = c(ORCID = "0000-0001-7509-0328"))
+  )
 Description: Provides tree, catboost and lightgbm engines for 'parsnip'.
 License: GPL-3
+URL: https://github.com/curso-r/treesnip
+Depends: 
+    parsnip (>= 0.1.4)
+Imports: 
+    dplyr,
+    purrr,
+    rlang,
+    stats,
+    tibble,
+    tree
+Suggests: 
+    catboost,
+    covr,
+    knitr,
+    lightgbm,
+    modeldata,
+    readr,
+    rmarkdown,
+    testthat (>= 2.1.0),
+    tidymodels
+VignetteBuilder: 
+    knitr
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-Depends: 
-    parsnip (>= 0.1.4)
-Suggests: 
-    testthat (>= 2.1.0),
-    tidymodels,
-    catboost,
-    modeldata,
-    lightgbm,
-    knitr,
-    rmarkdown,
-    readr
 RoxygenNote: 7.1.1
-Imports: 
-    rlang,
-    purrr,
-    tree,
-    tibble,
-    dplyr,
-    stats
-VignetteBuilder: knitr

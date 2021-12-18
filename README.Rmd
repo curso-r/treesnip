@@ -21,6 +21,8 @@ library(kableExtra)
 
 <!-- badges: start -->
 [![R build status](https://github.com/curso-r/treesnip/workflows/R-CMD-check/badge.svg)](https://github.com/curso-r/treesnip)
+[![Codecov test coverage](https://codecov.io/gh/curso-r/treesnip/branch/master/graph/badge.svg)](https://app.codecov.io/gh/curso-r/treesnip?branch=master)
+[![R-CMD-check](https://github.com/curso-r/treesnip/workflows/R-CMD-check/badge.svg)](https://github.com/curso-r/treesnip/actions)
 <!-- badges: end -->
 
 This package provides the following bindings for parsnip package:
