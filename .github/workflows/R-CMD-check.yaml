@@ -50,5 +50,11 @@ jobs:
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: rcmdcheck
+          
+      - name: Install catboost
+        run: |
+          remotes::install_url("https://github.com/catboost/catboost/releases/download/v0.26/catboost-R-Windows-0.26.tgz", INSTALL_opts = c("--no-multiarch"))
+        shell: Rscript {0}
 
       - uses: r-lib/actions/check-r-package@v2
+

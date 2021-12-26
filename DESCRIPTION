@@ -27,6 +27,9 @@ Suggests:
     modeldata,
     readr,
     rmarkdown,
+    readr,
+    glue,
+    scales
     testthat (>= 2.1.0),
     tidymodels
 VignetteBuilder: 
