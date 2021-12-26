@@ -11,16 +11,17 @@ status](https://github.com/curso-r/treesnip/workflows/R-CMD-check/badge.svg)](ht
 
 This package provides the following bindings for parsnip package:
 
-  - the `tree` engine for `decision_tree`;
-  - the `catboost` engine for `boost_tree`;
-  - the `lightGBM` engine for `boost_tree`.
+-   the `tree` engine for `decision_tree`;
+-   the `catboost` engine for `boost_tree` - only available in
+    `catboost` branch. See [catboost](#catboost);
+-   the `lightGBM` engine for `boost_tree`.
 
 **docs**
 
-  - [tree package
+-   [tree package
     docs](https://cran.r-project.org/web/packages/tree/tree.pdf)
-  - [LightGBM docs](https://lightgbm.readthedocs.io/)
-  - [Catboost docs](https://catboost.ai/docs/)
+-   [LightGBM docs](https://lightgbm.readthedocs.io/)
+-   [Catboost docs](https://catboost.ai/docs/)
 
 ## Installation
 
@@ -29,6 +30,8 @@ Not on CRAN yet.
 ``` r
 remotes::install_github("curso-r/treesnip")
 ```
+
+See [catboost](#catboost) to use with `catboost`.
 
 ## Minimal Example
 
@@ -46,493 +49,144 @@ parsnip::set_engine(model, "lightgbm")
 
 ## Hyperparameters map
 
-**decision\_tree()**
+**decision_tree()**
 
 <table>
-
 <thead>
-
 <tr>
-
 <th style="text-align:left;">
-
 parsnip
-
 </th>
-
 <th style="text-align:left;">
-
 tree
-
 </th>
-
 </tr>
-
 </thead>
-
 <tbody>
-
 <tr>
-
 <td style="text-align:left;">
-
-min\_n
-
+min_n
 </td>
-
 <td style="text-align:left;">
-
 minsize
-
 </td>
-
 </tr>
-
 <tr>
-
 <td style="text-align:left;">
-
-cost\_complexity
-
+cost_complexity
 </td>
-
 <td style="text-align:left;">
-
 mindev
-
 </td>
-
 </tr>
-
 </tbody>
-
 </table>
 
-**boost\_tree()**
+**boost_tree()**
 
 <table>
-
 <thead>
-
 <tr>
-
 <th style="text-align:left;">
-
 parsnip
-
 </th>
-
 <th style="text-align:left;">
-
 catboost
-
 </th>
-
 <th style="text-align:left;">
-
 lightGBM
-
 </th>
-
 </tr>
-
 </thead>
-
 <tbody>
-
 <tr>
-
 <td style="text-align:left;">
-
 mtry
-
 </td>
-
 <td style="text-align:left;">
-
 rsm
-
 </td>
-
 <td style="text-align:left;">
-
-feature\_fraction
-
+feature_fraction
 </td>
-
 </tr>
-
 <tr>
-
 <td style="text-align:left;">
-
 trees
-
 </td>
-
 <td style="text-align:left;">
-
 iterations
-
 </td>
-
 <td style="text-align:left;">
-
-num\_iterations
-
+num_iterations
 </td>
-
 </tr>
-
 <tr>
-
 <td style="text-align:left;">
-
-min\_n
-
+min_n
 </td>
-
 <td style="text-align:left;">
-
-min\_data\_in\_leaf
-
+min_data_in_leaf
 </td>
-
 <td style="text-align:left;">
-
-min\_data\_in\_leaf
-
+min_data_in_leaf
 </td>
-
 </tr>
-
 <tr>
-
 <td style="text-align:left;">
-
-tree\_depth
-
+tree_depth
 </td>
-
 <td style="text-align:left;">
-
 depth
-
 </td>
-
 <td style="text-align:left;">
-
-max\_depth
-
+max_depth
 </td>
-
 </tr>
-
 <tr>
-
 <td style="text-align:left;">
-
-learn\_rate
-
+learn_rate
 </td>
-
 <td style="text-align:left;">
-
-learning\_rate
-
+learning_rate
 </td>
-
 <td style="text-align:left;">
-
-learning\_rate
-
+learning_rate
 </td>
-
 </tr>
-
 <tr>
-
 <td style="text-align:left;">
-
-loss\_reduction
-
+loss_reduction
 </td>
-
 <td style="text-align:left;">
-
 <span style=" font-weight: bold;    color: red !important;">Not
 found</span>
-
 </td>
-
 <td style="text-align:left;">
-
-min\_gain\_to\_split
-
+min_gain_to_split
 </td>
-
 </tr>
-
 <tr>
-
 <td style="text-align:left;">
-
-sample\_size
-
+sample_size
 </td>
-
 <td style="text-align:left;">
-
 subsample
-
 </td>
-
 <td style="text-align:left;">
-
-bagging\_fraction
-
+bagging_fraction
 </td>
-
 </tr>
-
 </tbody>
-
 </table>
 
-## Roadmap
+## Catboost
 
-<table>
+Originally `treesnip` had support for both `lightgbm` and `catboost`.
+Since `catboost` has no intent to make it to CRAN we removed the parsnip
+implementation from the main package. You can still use it from the
+`catboost` branch that we will keep up to date with the main branch.
 
-<thead>
+The `catboost` branch can be installed with:
 
-<tr>
-
-<th style="text-align:left;">
-
-fun
-
-</th>
-
-<th style="text-align:left;">
-
-tree
-
-</th>
-
-<th style="text-align:left;">
-
-catboost
-
-</th>
-
-<th style="text-align:left;">
-
-lightGBM
-
-</th>
-
-</tr>
-
-</thead>
-
-<tbody>
-
-<tr>
-
-<td style="text-align:left;">
-
-set\_fit
-
-</td>
-
-<td style="text-align:left;">
-
-:heavy\_check\_mark:
-
-</td>
-
-<td style="text-align:left;">
-
-:heavy\_check\_mark:
-
-</td>
-
-<td style="text-align:left;">
-
-:heavy\_check\_mark:
-
-</td>
-
-</tr>
-
-<tr>
-
-<td style="text-align:left;">
-
-set\_model\_arg
-
-</td>
-
-<td style="text-align:left;">
-
-:heavy\_check\_mark:
-
-</td>
-
-<td style="text-align:left;">
-
-:heavy\_check\_mark:
-
-</td>
-
-<td style="text-align:left;">
-
-:heavy\_check\_mark:
-
-</td>
-
-</tr>
-
-<tr>
-
-<td style="text-align:left;">
-
-set\_pred
-
-</td>
-
-<td style="text-align:left;">
-
-:heavy\_check\_mark:
-
-</td>
-
-<td style="text-align:left;">
-
-:heavy\_check\_mark:
-
-</td>
-
-<td style="text-align:left;">
-
-:heavy\_check\_mark:
-
-</td>
-
-</tr>
-
-<tr>
-
-<td style="text-align:left;">
-
-train
-
-</td>
-
-<td style="text-align:left;">
-
-:heavy\_check\_mark:
-
-</td>
-
-<td style="text-align:left;">
-
-:heavy\_check\_mark:
-
-</td>
-
-<td style="text-align:left;">
-
-:heavy\_check\_mark:
-
-</td>
-
-</tr>
-
-<tr>
-
-<td style="text-align:left;">
-
-predict
-
-</td>
-
-<td style="text-align:left;">
-
-:heavy\_check\_mark:
-
-</td>
-
-<td style="text-align:left;">
-
-:heavy\_check\_mark:
-
-</td>
-
-<td style="text-align:left;">
-
-:heavy\_check\_mark:
-
-</td>
-
-</tr>
-
-<tr>
-
-<td style="text-align:left;">
-
-multi\_predict
-
-</td>
-
-<td style="text-align:left;">
-
-:white\_circle:
-
-</td>
-
-<td style="text-align:left;">
-
-:heavy\_check\_mark:
-
-</td>
-
-<td style="text-align:left;">
-
-:heavy\_check\_mark:
-
-</td>
-
-</tr>
-
-<tr>
-
-<td style="text-align:left;">
-
-tests
-
-</td>
-
-<td style="text-align:left;">
-
-:heavy\_check\_mark:
-
-</td>
-
-<td style="text-align:left;">
-
-:heavy\_check\_mark:
-
-</td>
-
-<td style="text-align:left;">
-
-:heavy\_check\_mark:
-
-</td>
-
-</tr>
-
-</tbody>
-
-</table>
+    remotes::install_github("curso-r/treesnip@catboost")
