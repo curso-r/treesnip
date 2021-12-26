@@ -5,13 +5,16 @@
 
 <!-- badges: start -->
 
-[![R build
-status](https://github.com/curso-r/treesnip/workflows/R-CMD-check/badge.svg)](https://github.com/curso-r/treesnip)
+[![R-CMD-check](https://github.com/curso-r/treesnip/workflows/R-CMD-check/badge.svg)](https://github.com/curso-r/treesnip/actions)
+[![Codecov test
+coverage](https://codecov.io/gh/curso-r/treesnip/branch/master/graph/badge.svg)](https://app.codecov.io/gh/curso-r/treesnip?branch=master)
+
 <!-- badges: end -->
 
 This package provides the following bindings for parsnip package:
 
 -   the `tree` engine for `decision_tree`;
+
 -   the `catboost` engine for `boost_tree` - only available in
     `catboost` branch. See [catboost](#catboost);
 -   the `lightGBM` engine for `boost_tree`.
@@ -190,3 +193,4 @@ implementation from the main package. You can still use it from the
 The `catboost` branch can be installed with:
 
     remotes::install_github("curso-r/treesnip@catboost")
+
