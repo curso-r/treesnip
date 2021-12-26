@@ -272,7 +272,7 @@ train_lightgbm <- function(x, y, max_depth = 17, num_iterations = 10, learning_r
     data = prepare_df_lgbm(x),
     label = y,
     categorical_feature = categorical_columns(x),
-    feature_pre_filter = FALSE
+    params = list(feature_pre_filter = FALSE)
   )
 
   main_args <- list(
@@ -345,7 +345,8 @@ predict_lightgbm_classification_raw <- function(object, new_data, ...) {
 #' @export
 predict_lightgbm_regression_numeric <- function(object, new_data, ...) {
   # train_colnames <- object$fit$.__enclos_env__$private$train_set$get_colnames()
-  p <- stats::predict(object$fit, prepare_df_lgbm(new_data), reshape = TRUE, predict_disable_shape_check=TRUE, ...)
+  p <- stats::predict(object$fit, prepare_df_lgbm(new_data), reshape = TRUE,
+                      params = list(predict_disable_shape_check=TRUE), ...)
   p
 }
 
