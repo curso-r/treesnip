@@ -28,7 +28,7 @@ library(kableExtra)
 This package provides the following bindings for parsnip package:
 
 - the `tree` engine for `decision_tree`;
-- the `catboost` engine for `boost_tree`;
+- the `catboost` engine for `boost_tree` - only available in `catboost` branch. See [catboost](#catboost);
 - the `lightGBM` engine for `boost_tree`.
 
 **docs**
@@ -45,6 +45,8 @@ Not on CRAN yet.
 remotes::install_github("curso-r/treesnip")
 ```
 
+See [catboost](#catboost) to use with `catboost`.
+
 ## Minimal Example
 
 ``` r
@@ -58,9 +60,6 @@ model <- parsnip::boost_tree(mtry = 1, trees = 50)
 parsnip::set_engine(model, "catboost")
 parsnip::set_engine(model, "lightgbm")
 ```
-
-
-
 
 ## Hyperparameters map
 
@@ -89,22 +88,13 @@ tibble::tribble(
 ) %>% kable(escape = FALSE) 
 ```
 
-## Roadmap
+## Catboost
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
-ok <- function(x = "") {
-  if(x == "x") ":heavy_check_mark:"
-  else if(x == "n") ":white_circle:"
-  else ":red_circle:"
-}
-tibble::tribble(
-  ~fun,              ~tree,    ~catboost,    ~lightGBM,
-  "set_fit",       ok("x"),      ok("x"),      ok("x"),
-  "set_model_arg", ok("x"),      ok("x"),      ok("x"),
-  "set_pred",      ok("x"),      ok("x"),      ok("x"),
-  "train",         ok("x"),      ok("x"),      ok("x"),
-  "predict",       ok("x"),      ok("x"),      ok("x"),
-  "multi_predict", ok("n"),      ok("x"),      ok("x"),
-  "tests",         ok("x"),      ok("x"),      ok("x")
-) %>% kable() 
+Originally `treesnip` had support for both `lightgbm` and `catboost`. Since `catboost` has no intent to make it to CRAN we removed the parsnip implementation from the main package. You can still use it from the `catboost` branch that we will keep up to date with the main branch. 
+
+The `catboost` branch can be installed with:
+
 ```
+remotes::install_github("curso-r/treesnip@catboost")
+```
+

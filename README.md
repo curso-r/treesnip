@@ -5,17 +5,18 @@
 
 <!-- badges: start -->
 
-[![R build
-status](https://github.com/curso-r/treesnip/workflows/R-CMD-check/badge.svg)](https://github.com/curso-r/treesnip)
+[![R-CMD-check](https://github.com/curso-r/treesnip/workflows/R-CMD-check/badge.svg)](https://github.com/curso-r/treesnip/actions)
 [![Codecov test
 coverage](https://codecov.io/gh/curso-r/treesnip/branch/master/graph/badge.svg)](https://app.codecov.io/gh/curso-r/treesnip?branch=master)
-[![R-CMD-check](https://github.com/curso-r/treesnip/workflows/R-CMD-check/badge.svg)](https://github.com/curso-r/treesnip/actions)
+
 <!-- badges: end -->
 
 This package provides the following bindings for parsnip package:
 
 -   the `tree` engine for `decision_tree`;
--   the `catboost` engine for `boost_tree`;
+
+-   the `catboost` engine for `boost_tree` - only available in
+    `catboost` branch. See [catboost](#catboost);
 -   the `lightGBM` engine for `boost_tree`.
 
 **docs**
@@ -32,6 +33,8 @@ Not on CRAN yet.
 ``` r
 remotes::install_github("curso-r/treesnip")
 ```
+
+See [catboost](#catboost) to use with `catboost`.
 
 ## Minimal Example
 
@@ -180,123 +183,14 @@ bagging_fraction
 </tbody>
 </table>
 
-## Roadmap
+## Catboost
 
-<table>
-<thead>
-<tr>
-<th style="text-align:left;">
-fun
-</th>
-<th style="text-align:left;">
-tree
-</th>
-<th style="text-align:left;">
-catboost
-</th>
-<th style="text-align:left;">
-lightGBM
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left;">
-set_fit
-</td>
-<td style="text-align:left;">
-:heavy_check_mark:
-</td>
-<td style="text-align:left;">
-:heavy_check_mark:
-</td>
-<td style="text-align:left;">
-:heavy_check_mark:
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-set_model_arg
-</td>
-<td style="text-align:left;">
-:heavy_check_mark:
-</td>
-<td style="text-align:left;">
-:heavy_check_mark:
-</td>
-<td style="text-align:left;">
-:heavy_check_mark:
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-set_pred
-</td>
-<td style="text-align:left;">
-:heavy_check_mark:
-</td>
-<td style="text-align:left;">
-:heavy_check_mark:
-</td>
-<td style="text-align:left;">
-:heavy_check_mark:
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-train
-</td>
-<td style="text-align:left;">
-:heavy_check_mark:
-</td>
-<td style="text-align:left;">
-:heavy_check_mark:
-</td>
-<td style="text-align:left;">
-:heavy_check_mark:
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-predict
-</td>
-<td style="text-align:left;">
-:heavy_check_mark:
-</td>
-<td style="text-align:left;">
-:heavy_check_mark:
-</td>
-<td style="text-align:left;">
-:heavy_check_mark:
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-multi_predict
-</td>
-<td style="text-align:left;">
-:white_circle:
-</td>
-<td style="text-align:left;">
-:heavy_check_mark:
-</td>
-<td style="text-align:left;">
-:heavy_check_mark:
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-tests
-</td>
-<td style="text-align:left;">
-:heavy_check_mark:
-</td>
-<td style="text-align:left;">
-:heavy_check_mark:
-</td>
-<td style="text-align:left;">
-:heavy_check_mark:
-</td>
-</tr>
-</tbody>
-</table>
+Originally `treesnip` had support for both `lightgbm` and `catboost`.
+Since `catboost` has no intent to make it to CRAN we removed the parsnip
+implementation from the main package. You can still use it from the
+`catboost` branch that we will keep up to date with the main branch.
+
+The `catboost` branch can be installed with:
+
+    remotes::install_github("curso-r/treesnip@catboost")
+
