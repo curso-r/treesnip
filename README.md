@@ -49,7 +49,7 @@ parsnip::set_engine(model, "lightgbm")
 
 ## Hyperparameters map
 
-**decision\_tree()**
+**decision_tree()**
 
 <table>
 <thead>
@@ -65,7 +65,7 @@ tree
 <tbody>
 <tr>
 <td style="text-align:left;">
-min\_n
+min_n
 </td>
 <td style="text-align:left;">
 minsize
@@ -73,7 +73,7 @@ minsize
 </tr>
 <tr>
 <td style="text-align:left;">
-cost\_complexity
+cost_complexity
 </td>
 <td style="text-align:left;">
 mindev
@@ -82,7 +82,7 @@ mindev
 </tbody>
 </table>
 
-**boost\_tree()**
+**boost_tree()**
 
 <table>
 <thead>
@@ -107,7 +107,7 @@ mtry
 rsm
 </td>
 <td style="text-align:left;">
-feature\_fraction
+feature_fraction
 </td>
 </tr>
 <tr>
@@ -118,63 +118,63 @@ trees
 iterations
 </td>
 <td style="text-align:left;">
-num\_iterations
+num_iterations
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-min\_n
+min_n
 </td>
 <td style="text-align:left;">
-min\_data\_in\_leaf
+min_data_in_leaf
 </td>
 <td style="text-align:left;">
-min\_data\_in\_leaf
+min_data_in_leaf
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-tree\_depth
+tree_depth
 </td>
 <td style="text-align:left;">
 depth
 </td>
 <td style="text-align:left;">
-max\_depth
+max_depth
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-learn\_rate
+learn_rate
 </td>
 <td style="text-align:left;">
-learning\_rate
+learning_rate
 </td>
 <td style="text-align:left;">
-learning\_rate
+learning_rate
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-loss\_reduction
+loss_reduction
 </td>
 <td style="text-align:left;">
 <span style=" font-weight: bold;    color: red !important;">Not
 found</span>
 </td>
 <td style="text-align:left;">
-min\_gain\_to\_split
+min_gain_to_split
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-sample\_size
+sample_size
 </td>
 <td style="text-align:left;">
 subsample
 </td>
 <td style="text-align:left;">
-bagging\_fraction
+bagging_fraction
 </td>
 </tr>
 </tbody>
@@ -202,44 +202,44 @@ lightGBM
 <tbody>
 <tr>
 <td style="text-align:left;">
-set\_fit
+set_fit
 </td>
 <td style="text-align:left;">
-:heavy\_check\_mark:
+:heavy_check_mark:
 </td>
 <td style="text-align:left;">
-:heavy\_check\_mark:
+:heavy_check_mark:
 </td>
 <td style="text-align:left;">
-:heavy\_check\_mark:
-</td>
-</tr>
-<tr>
-<td style="text-align:left;">
-set\_model\_arg
-</td>
-<td style="text-align:left;">
-:heavy\_check\_mark:
-</td>
-<td style="text-align:left;">
-:heavy\_check\_mark:
-</td>
-<td style="text-align:left;">
-:heavy\_check\_mark:
+:heavy_check_mark:
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-set\_pred
+set_model_arg
 </td>
 <td style="text-align:left;">
-:heavy\_check\_mark:
+:heavy_check_mark:
 </td>
 <td style="text-align:left;">
-:heavy\_check\_mark:
+:heavy_check_mark:
 </td>
 <td style="text-align:left;">
-:heavy\_check\_mark:
+:heavy_check_mark:
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+set_pred
+</td>
+<td style="text-align:left;">
+:heavy_check_mark:
+</td>
+<td style="text-align:left;">
+:heavy_check_mark:
+</td>
+<td style="text-align:left;">
+:heavy_check_mark:
 </td>
 </tr>
 <tr>
@@ -247,13 +247,13 @@ set\_pred
 train
 </td>
 <td style="text-align:left;">
-:heavy\_check\_mark:
+:heavy_check_mark:
 </td>
 <td style="text-align:left;">
-:heavy\_check\_mark:
+:heavy_check_mark:
 </td>
 <td style="text-align:left;">
-:heavy\_check\_mark:
+:heavy_check_mark:
 </td>
 </tr>
 <tr>
@@ -261,27 +261,27 @@ train
 predict
 </td>
 <td style="text-align:left;">
-:heavy\_check\_mark:
+:heavy_check_mark:
 </td>
 <td style="text-align:left;">
-:heavy\_check\_mark:
+:heavy_check_mark:
 </td>
 <td style="text-align:left;">
-:heavy\_check\_mark:
+:heavy_check_mark:
 </td>
 </tr>
 <tr>
 <td style="text-align:left;">
-multi\_predict
+multi_predict
 </td>
 <td style="text-align:left;">
-:white\_circle:
+:white_circle:
 </td>
 <td style="text-align:left;">
-:heavy\_check\_mark:
+:heavy_check_mark:
 </td>
 <td style="text-align:left;">
-:heavy\_check\_mark:
+:heavy_check_mark:
 </td>
 </tr>
 <tr>
@@ -289,13 +289,13 @@ multi\_predict
 tests
 </td>
 <td style="text-align:left;">
-:heavy\_check\_mark:
+:heavy_check_mark:
 </td>
 <td style="text-align:left;">
-:heavy\_check\_mark:
+:heavy_check_mark:
 </td>
 <td style="text-align:left;">
-:heavy\_check\_mark:
+:heavy_check_mark:
 </td>
 </tr>
 </tbody>
