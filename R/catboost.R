@@ -189,7 +189,7 @@ add_boost_tree_catboost <- function() {
   parsnip::set_model_arg(
     model = "boost_tree",
     eng = "catboost",
-    parsnip = "sample_size",
+    parsnip = "sample_prop",
     original = "subsample",
     func = list(pkg = "dials", fun = "sample_prop"),
     has_submodel = FALSE
