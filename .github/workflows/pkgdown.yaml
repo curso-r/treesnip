@@ -27,6 +27,9 @@ jobs:
         with:
           extra-packages: pkgdown
 
+      - name: Install package
+        run: R CMD INSTALL .
+
       - name: Deploy package
         run: |
           git config --local user.name "$GITHUB_ACTOR"
