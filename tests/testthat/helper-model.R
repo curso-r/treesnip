@@ -25,6 +25,15 @@ expect_regression_works <- function(model) {
 
   expect_mse(pred, mtcars$mpg, less_than = mean(mtcars$mpg))
   expect_not_constant_predictions(pred$.pred)
+
+  # test if model can saved
+  f <- tempfile()
+  saveRDS(adj, f)
+
+  rm(adj); gc()
+
+  mod <- readRDS(f)
+  expect_equal(predict(mod, mtcars), pred)
 }
 
 expect_binary_classification_works <- function(model) {
