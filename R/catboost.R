@@ -191,7 +191,7 @@ add_boost_tree_catboost <- function() {
     eng = "catboost",
     parsnip = "sample_prop",
     original = "subsample",
-    func = list(pkg = "dials", fun = "sample_size"),
+    func = list(pkg = "dials", fun = "sample_prop"),
     has_submodel = FALSE
   )
 }

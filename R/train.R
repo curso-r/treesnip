@@ -1,7 +1,18 @@
+
 .onLoad <- function(libname, pkgname){
-  add_decision_tree_tree()
-  add_boost_tree_catboost()
-  add_boost_tree_lightgbm()
+
+  if (!"lightgbm" %in% parsnip::get_model_env()$boost_tree$engine) {
+    add_boost_tree_lightgbm()
+  }
+
+  if (!"catboost" %in% parsnip::get_model_env()$boost_tree$engine) {
+    add_boost_tree_catboost()
+  }
+
+  if (!"tree" %in% parsnip::get_model_env()$decision_tree$engine) {
+    add_decision_tree_tree()
+  }
+
 }
 
 

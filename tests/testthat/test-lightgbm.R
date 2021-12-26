@@ -50,7 +50,7 @@ test_that("lightgbm mtry", {
 
 test_that("lightgbm trees", {
 
-  hyperparameters <- data.frame(trees = c(1, 20, 300))
+  hyperparameters <- data.frame(trees = c(1, 20, 50))
   for(i in 1:nrow(hyperparameters)) {
     model <- parsnip::boost_tree(trees = hyperparameters$trees[i], min_n = 1)
     expect_all_modes_works(model, 'lightgbm')
