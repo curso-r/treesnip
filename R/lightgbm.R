@@ -16,7 +16,7 @@ add_boost_tree_lightgbm <- function() {
       interface = "data.frame",
       protect = c("x", "y"),
       func = c(pkg = "treesnip", fun = "train_lightgbm"),
-      defaults = list()
+      defaults = list(verbose = -1)
     )
   )
 
@@ -204,7 +204,7 @@ prepare_df_lgbm <- function(x, y = NULL) {
 train_lightgbm <- function(x, y, max_depth = 17, num_iterations = 10, learning_rate = 0.1,
                            feature_fraction = 1, min_data_in_leaf = 20,
                            min_gain_to_split = 0, bagging_fraction = 1,
-                           quiet = TRUE, ...) {
+                           quiet = FALSE, ...) {
 
   force(x)
   force(y)
