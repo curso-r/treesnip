@@ -182,7 +182,7 @@ prepare_df_lgbm <- function(x, y = NULL) {
 
 #' Boosted trees via lightgbm
 #'
-#' `lightgbm_train` is a wrapper for `lightgbm` tree-based models
+#' `train_lightgbm` is a wrapper for `lightgbm` tree-based models
 #'  where all of the model arguments are in the main function.
 #'
 #' @param x A data frame or matrix of predictors
@@ -196,16 +196,22 @@ prepare_df_lgbm <- function(x, y = NULL) {
 #' @param min_gain_to_split A number for the minimum loss reduction required to make a
 #'  further partition on a leaf node of the tree.
 #' @param bagging_fraction Subsampling proportion of rows.
-#' @param ... Other options to pass to `lightgbm.train`.
+#' @param quiet A logical; should logging by [lightgbm::lgb.train()] be muted?
+#' @param ... Other options to pass to [lightgbm::lgb.train()].
 #' @return A fitted `lightgbm.Model` object.
 #' @keywords internal
 #' @export
 train_lightgbm <- function(x, y, max_depth = 17, num_iterations = 10, learning_rate = 0.1,
-                           feature_fraction = 1, min_data_in_leaf = 20, min_gain_to_split = 0, bagging_fraction = 1, ...) {
+                           feature_fraction = 1, min_data_in_leaf = 20,
+                           min_gain_to_split = 0, bagging_fraction = 1,
+                           quiet = TRUE, ...) {
 
   force(x)
   force(y)
   others <- list(...)
+  if (!is.logical(quiet)) {
+    rlang::abort("'quiet' should be a single logical.")
+  }
 
   # feature_fraction ------------------------------
   if(!is.null(feature_fraction)) {
@@ -281,7 +287,14 @@ train_lightgbm <- function(x, y, max_depth = 17, num_iterations = 10, learning_r
   )
 
   call <- parsnip::make_call(fun = "lgb.train", ns = "lightgbm", main_args)
-  rlang::eval_tidy(call, env = rlang::current_env())
+
+  if (quiet) {
+    junk <- utils::capture.output(res <- rlang::eval_tidy(call, env = rlang::current_env()))
+  } else {
+    res <- rlang::eval_tidy(call, env = rlang::current_env())
+  }
+
+  res
 }
 
 #' predict_lightgbm_classification_prob
@@ -344,9 +357,14 @@ predict_lightgbm_classification_raw <- function(object, new_data, ...) {
 #'
 #' @export
 predict_lightgbm_regression_numeric <- function(object, new_data, ...) {
-  # train_colnames <- object$fit$.__enclos_env__$private$train_set$get_colnames()
-  p <- stats::predict(object$fit, prepare_df_lgbm(new_data), reshape = TRUE,
-                      params = list(predict_disable_shape_check=TRUE), ...)
+  p <-
+    stats::predict(
+      object$fit,
+      prepare_df_lgbm(new_data),
+      reshape = TRUE,
+      params = list(predict_disable_shape_check = TRUE),
+      ...
+    )
   p
 }
 
