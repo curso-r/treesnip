@@ -28,7 +28,7 @@ expect_regression_works <- function(model) {
 
   # test if model can saved
   f <- tempfile()
-  saveRDS(adj, f)
+  lightgbm::saveRDS.lgb.Booster(adj, f)
 
   rm(adj); gc()
 
