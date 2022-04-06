@@ -14,7 +14,7 @@ train_lightgbm(
   min_data_in_leaf = 20,
   min_gain_to_split = 0,
   bagging_fraction = 1,
-  quiet = TRUE,
+  quiet = FALSE,
   ...
 )
 }
