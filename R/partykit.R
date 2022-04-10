@@ -136,7 +136,7 @@ add_decision_tree_partykit <- function() {
     type = "prob",
     value = list(
       pre = NULL,
-      post = NULL,
+      post = function(result, object) tibble::as_tibble(result),
       func = c(fun = "predict"),
       args =
         list(
@@ -306,7 +306,7 @@ add_rand_forest_partykit <- function() {
     type = "prob",
     value = list(
       pre = NULL,
-      post = NULL,
+      post = function(result, object) tibble::as_tibble(result),
       func = c(fun = "predict"),
       args =
         list(
