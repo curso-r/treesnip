@@ -5,3 +5,4 @@ tests/testthat/catboost_info
 inst/doc
 doc
 Meta
+.DS_Store

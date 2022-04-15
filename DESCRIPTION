@@ -27,6 +27,7 @@ Suggests:
     knitr,
     lightgbm,
     modeldata,
+    partykit,
     readr,
     rmarkdown,
     rsample,
