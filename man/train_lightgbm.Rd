@@ -14,6 +14,7 @@ train_lightgbm(
   min_data_in_leaf = 20,
   min_gain_to_split = 0,
   bagging_fraction = 1,
+  quiet = FALSE,
   ...
 )
 }
@@ -38,13 +39,15 @@ further partition on a leaf node of the tree.}
 
 \item{bagging_fraction}{Subsampling proportion of rows.}
 
-\item{...}{Other options to pass to \code{lightgbm.train}.}
+\item{quiet}{A logical; should logging by \code{\link[lightgbm:lgb.train]{lightgbm::lgb.train()}} be muted?}
+
+\item{...}{Other options to pass to \code{\link[lightgbm:lgb.train]{lightgbm::lgb.train()}}.}
 }
 \value{
 A fitted \code{lightgbm.Model} object.
 }
 \description{
-\code{lightgbm_train} is a wrapper for \code{lightgbm} tree-based models
+\code{train_lightgbm} is a wrapper for \code{lightgbm} tree-based models
 where all of the model arguments are in the main function.
 }
 \keyword{internal}
