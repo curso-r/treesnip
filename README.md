@@ -20,7 +20,11 @@ This package provides the following bindings for parsnip package:
     `catboost` branch. See [catboost](#catboost);
 -   the `lightGBM` engine for `boost_tree`.
 
-**docs**
+**Note that the development of this package has shifted to the [bonsai
+package](https://github.com/tidymodels/bonsai). We suggest filing issues
+and/or pull requests there.**
+
+## docs
 
 -   [tree package
     docs](https://cran.r-project.org/web/packages/tree/tree.pdf)
